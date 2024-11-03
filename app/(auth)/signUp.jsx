@@ -57,7 +57,7 @@ return (
         <Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15, justifyContent:'center'}} >
             <Text style={{color:'black', textAlign:'center', fontSize:20, overflow:'hidden', textAlignVertical:'center'}} onPress={() => {
             router.navigate("/")
-        }}>Iniciar sesión</Text>
+        }}>Ya tengo cuenta</Text>
         </Pressable>
     </View>
 </View>

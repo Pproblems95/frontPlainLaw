@@ -5,7 +5,8 @@ import { Tabs } from 'expo-router'
 const TabsLayout = () => {
   return (
     <Tabs>
-        <Tabs.Screen name='lobby' />
+        <Tabs.Screen name='lobby' options={{title:'¡Bienvenido!', headerTitleStyle:{fontSize:30, fontWeight:'bold', color:'white'},
+      headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}}} />
     </Tabs>
   )
 }
