@@ -1,11 +1,24 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Tabs } from 'expo-router'
+import { HomeIcon, UserIcon, DocumentIcon } from '../../assets/icons'
 
 const TabsLayout = () => {
   return (
-    <Tabs>
-        <Tabs.Screen name='lobby' options={{title:'¡Bienvenido!', headerTitleStyle:{fontSize:30, fontWeight:'bold', color:'white'},
+    <Tabs screenOptions={{
+      tabBarStyle:{backgroundColor:'black', },
+      tabBarActiveBackgroundColor:'white',
+      tabBarActiveTintColor:'black',
+      tabBarInactiveTintColor:'white',
+      tabBarLabelStyle:{
+        fontSize:15
+      }
+    }}>
+        <Tabs.Screen name='lobby' options={{title:'¡Bienvenido!', tabBarIcon: ({color}) => <HomeIcon color={color}/>, headerTitleStyle:{fontSize:30, fontWeight:'bold', color:'white'},
+      headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}}} />
+        <Tabs.Screen name='myDocs' options={{title:'Mis documentos', tabBarIcon: ({color}) => <DocumentIcon color={color} /> , headerTitleStyle:{fontSize:30, fontWeight:'bold', color:'white'},
+      headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}}} />
+      <Tabs.Screen name='profile' options={{title:'Mi perfil', tabBarIcon: ({color}) => <UserIcon color={color}/> , headerTitleStyle:{fontSize:30, fontWeight:'bold', color:'white'},
       headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}}} />
     </Tabs>
   )

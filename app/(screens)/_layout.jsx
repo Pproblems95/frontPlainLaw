@@ -7,6 +7,8 @@ const ScreensLayout = () => {
     <Stack>
         <Stack.Screen name='textTranslated' options={{title:'Traductor', headerTitleStyle:{fontSize:30, fontWeight:'bold', color:'white'},
       headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}, headerBackVisible:true, headerTintColor:'white'} } />
+        <Stack.Screen name='saveDocument' options={{title:'Firmar documento', headerTitleStyle:{fontSize:30, fontWeight:'bold', color:'white'},
+      headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}, headerBackVisible:true, headerTintColor:'white'} } />
     </Stack>
   )
 }

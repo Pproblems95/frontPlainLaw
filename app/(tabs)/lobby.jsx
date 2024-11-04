@@ -18,7 +18,9 @@ const lobby = () => {
       <View style={{ display:'flex', flex:1, justifyContent:'space-between', backgroundColor:'white', borderRadius:20, marginTop:10  }}>
         <Text style={{fontSize:30, textAlign:'center'}}>¿Deseas buscar alguna palabra específica?</Text>
         <TextInput style={{borderBottomColor:'black', borderBottomWidth:1, marginHorizontal:screenWidth*0.2}}/>
-        <Pressable style={{alignSelf:'flex-end', padding:10, margin:10, backgroundColor:'black', borderRadius:20, marginBottom:10}}>
+        <Pressable style={{alignSelf:'flex-end', padding:10, margin:10, backgroundColor:'black', borderRadius:20, marginBottom:10}} onPress={() => {
+          router.navigate("textTranslated")
+        }}>
         <Text style={{fontSize:20, color:'white'}}>Enviar palabra</Text>
       </Pressable>
       </View>
