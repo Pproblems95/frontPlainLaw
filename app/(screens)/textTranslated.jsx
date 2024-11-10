@@ -1,22 +1,36 @@
-import { StyleSheet, Text, View , Pressable, ScrollView} from 'react-native'
-import React from 'react'
-import { router } from 'expo-router'
+import { StyleSheet, Text, View , Pressable, ScrollView, DevSettings} from 'react-native'
+import React, { useEffect } from 'react'
+import { router, useLocalSearchParams } from 'expo-router'
+import {base_url} from '@env'
+
+
+
 
 const textTranslated = () => {
+  let { data } = useLocalSearchParams();
+  let postAI = JSON.parse(data)
+  const url = base_url
   return (
     <>
     <ScrollView style={{display:'flex', flex:1, }}>
       <View style={{paddingHorizontal:5, overflow:'scroll'}}>
-        <Text style={{fontSize:30, textAlign:'center'}}>Aquí está tu texto traducido</Text>
-        <Text style={{fontSize:20}}>Texto traducidoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo</Text>
+       {postAI.body.map((value, index) => {
+        const [tipo, texto] = value.split(" - ")
+        if (tipo === "Resumen") {
+          console.log('Resumen')
+          return(
+            <Text key={index} style={{fontSize:20, textAlign:'justify'}}>{texto}</Text>
+          )
+        }
+        else if(tipo === "Subtitulo"){
+          console.log('Subtitulo')
+          return(
+            <Text key={index} style={{fontSize:30, textAlign:'center'}}>{texto}</Text>
+          )
+        }
+       })}
       </View>
 
-      <View>
-        <Text style={{fontSize:30, textAlign:'center'}}>Las partes más críticas son</Text>
-        <View style={{borderRadius:20, marginHorizontal:5, backgroundColor:'black'}}>
-          <Text style={{fontSize:20, color:'white', padding:10, overflow:'scroll'}}>Partes criticassssssssssssssssssssssssssssssssssssssssssss</Text>
-        </View>
-      </View>
       
     </ScrollView>
     <View style={{flexDirection:'row', display:'flex', backgroundColor:'black'}}>
@@ -27,7 +41,10 @@ const textTranslated = () => {
     </Pressable>
     <Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15, justifyContent:'center'}} >
         <Text style={{color:'black', textAlign:'center', fontSize:20, overflow:'hidden', textAlignVertical:'center'}} onPress={() => {
-          router.navigate("saveDocument")
+          router.push({
+            pathname: "saveDocument",
+            params: { data: JSON.stringify(postAI) }
+        });
     }}> Firmar y guardar documento</Text>
     </Pressable>
     </View>
