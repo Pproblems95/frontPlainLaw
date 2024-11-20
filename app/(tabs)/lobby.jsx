@@ -13,10 +13,12 @@ const lobby = () => {
   const [isOpen, SetOpen] = useState(false)
   const [errorMessage, SetErrorMessage] = useState('')
   const [postAI, SetPostAI] = useState(null)
+  const [loading, SetLoading] = useState(false)
   const screenWidth = Dimensions.get('screen').width
   const screenHeight = Dimensions.get('screen').height
   useEffect(() => {
     if(sendText != ''){
+      SetLoading(true)
       console.log(sendText)
       fetch(url+'/api/summaries/ai', {
         method:'POST',
@@ -29,6 +31,7 @@ const lobby = () => {
       })
       .then((res) => {return res.json()})
       .then((res) => {SetPostAI(res)})
+      .finally(() => {SetLoading(false)})
     }
   }, [sendText])
   useEffect(() => {
@@ -47,11 +50,17 @@ const lobby = () => {
     }
       
     }
-  })
+  }, [postAI])
   useEffect(() => {
     if(errorMessage != '')
     SetOpen(true)
   }, [errorMessage])
+  useEffect(() => {
+    if(loading){
+      SetErrorMessage('Cargando tu solicitud, por favor espera...')
+    }
+    
+  }, [loading])
   return (
     <>
     <ScrollView style={{display:'flex', padding:5}}>
@@ -104,12 +113,15 @@ const lobby = () => {
         <Text style={{textAlign:'center', fontSize:20}}>{errorMessage}</Text>
       </View>
       <View style={{display:'flex', alignSelf:'flex-end', padding:10 }}>
-        <Pressable style={{backgroundColor:'black', borderRadius:20, padding:10}}  onPress={() => {
-          SetErrorMessage('')
-          SetOpen(false)
-        }}>
-          <Text style={{color:'white', fontSize:20}}>Cerrar</Text>
-        </Pressable>
+        {!loading && (
+          <Pressable style={{backgroundColor:'black', borderRadius:20, padding:10}}  onPress={() => {
+            SetErrorMessage('')
+            SetOpen(false)
+          }}>
+            <Text style={{color:'white', fontSize:20}}>Cerrar</Text>
+          </Pressable>
+        )}
+        
       </View>
       
       

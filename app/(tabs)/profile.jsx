@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, Dimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { UserIcon } from '../../assets/icons'
 import { router, Tabs } from 'expo-router'
@@ -8,8 +8,10 @@ import {base_url} from '@env'
 const profile = () => {
     const [editable, SetEditable] = useState(false)
     const [data, SetData] = useState(null)
-    const [user, SetUser] = useState({})
     const [loading, SetLoading] = useState(true)
+    const screenWidth = Dimensions.get('screen').width
+    const [errorMessage, SetErrorMessage] = useState('Cargando, por favor espera...')
+
     const url = base_url
     useEffect(() => {
         fetch(url+'/api/users/current', {
@@ -24,14 +26,29 @@ const profile = () => {
     useEffect(() => {
         if(data != null){
             if(!data.error){
-                SetUser(data.body)
                 SetLoading(false)
             }
         }   
     })
     if (loading) {
         return(
-            <Text>Cargando...</Text>
+            <Modal visible={true} transparent={true} animationType="fade">
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+        <View style={{ width: screenWidth*0.7,padding: 20, backgroundColor: 'white', borderRadius: 10, borderColor: 'black', borderWidth: 1, display:'flex' }}>
+          <View style={{borderBottomColor:'gray', borderBottomWidth:1, display:'flex', padding:10 }}>
+            <Text style={{ textAlign: 'center', color: 'black', fontSize:30, fontWeight:'bold' }}>AVISO</Text>
+          </View>
+          <View  style={{borderBottomColor:'gray', borderBottomWidth:1, padding:10 }}  >
+            <Text style={{textAlign:'center', fontSize:20}}>{errorMessage}</Text>
+          </View>
+          <View style={{display:'flex', alignSelf:'flex-end', padding:10 }}>
+            
+          </View>
+          
+          
+        </View>
+      </View>
+    </Modal>
         )
     }
     else if(!loading){

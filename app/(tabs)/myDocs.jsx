@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, Pressable } from 'react-native'
+import { ScrollView, StyleSheet, Text, View, Pressable, Modal, Dimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import {base_url} from '@env'
 import { router } from 'expo-router'
@@ -8,6 +8,8 @@ const myDocs = () => {
     const [data, SetData] = useState(null)
     const [contracts, SetContracts] = useState([])
     const [loading, SetLoading] = useState(true)
+    const [errorMessage, SetErrorMessage] = useState('Cargando, por favor espera...')
+    const screenWidth = Dimensions.get('screen').width
     useEffect(() => {
         fetch(url+'/api/summaries/all/1', {
             method:'GET',
@@ -30,24 +32,7 @@ const myDocs = () => {
             }
         }
     }, [data])
-    // useEffect(() => {
-    //     SetLoading(false)
-    // }, [contracts])
-
-
-    // const data = [
-    //     { "id": 1, "nombre": "Red Social 1", "fecha": "2024-10-01" },
-    //     { "id": 2, "nombre": "Red Social 2", "fecha": "2024-10-02" },
-    //     { "id": 3, "nombre": "Red Social 3", "fecha": "2024-10-03" },
-    //     { "id": 4, "nombre": "Red Social 4", "fecha": "2024-10-04" },
-    //     { "id": 5, "nombre": "Red Social 5", "fecha": "2024-10-05" },
-    //     { "id": 6, "nombre": "Red Social 6", "fecha": "2024-10-06" },
-    //     { "id": 7, "nombre": "Red Social 7", "fecha": "2024-10-07" },
-    //     { "id": 8, "nombre": "Red Social 8", "fecha": "2024-10-08" },
-    //     { "id": 9, "nombre": "Red Social 9", "fecha": "2024-10-09" },
-    //     { "id": 10, "nombre": "Red Social 10", "fecha": "2024-10-10" }
-    // ];
-    
+ 
   if (!loading) {
     return (
         <ScrollView>
@@ -71,7 +56,23 @@ const myDocs = () => {
   }
   else if(loading){
     return(
-        <Text>Cargando...</Text>
+        <Modal visible={true} transparent={true} animationType="fade">
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+    <View style={{ width: screenWidth*0.7,padding: 20, backgroundColor: 'white', borderRadius: 10, borderColor: 'black', borderWidth: 1, display:'flex' }}>
+      <View style={{borderBottomColor:'gray', borderBottomWidth:1, display:'flex', padding:10 }}>
+        <Text style={{ textAlign: 'center', color: 'black', fontSize:30, fontWeight:'bold' }}>AVISO</Text>
+      </View>
+      <View  style={{borderBottomColor:'gray', borderBottomWidth:1, padding:10 }}  >
+        <Text style={{textAlign:'center', fontSize:20}}>{errorMessage}</Text>
+      </View>
+      <View style={{display:'flex', alignSelf:'flex-end', padding:10 }}>
+        
+      </View>
+      
+      
+    </View>
+  </View>
+</Modal>
     )
   }
     

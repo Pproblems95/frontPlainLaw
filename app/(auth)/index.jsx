@@ -19,7 +19,15 @@ const signIn = () => {
             if (!loginFailed.error) {
                 router.navigate("lobby")
             }
-            else{console.log(loginFailed)}
+            else if(loginFailed.error){
+                if(loginFailed.status === 409){
+                    router.navigate("lobby")
+                }
+            }
+            else{
+                alert('Hubo un error')
+            }
+            
         }
         else{
             console.log(loginFailed)
@@ -62,8 +70,8 @@ const signIn = () => {
             </Pressable>
         </View>
 
-        <View style={{flexDirection:'row', display:'flex', backgroundColor:'black'}}>
-            <Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15}} onPress={() => {
+        <View style={{ display:'flex', backgroundColor:'black', height:screenHeight*0.1}}>
+            {/* <Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15}} onPress={() => {
                 fetch(url+'/api/auth/logout/', {
                     method:'DELETE',
                     headers:{
@@ -74,10 +82,12 @@ const signIn = () => {
                 .then((res) => console.log(res))
             }} >
                 <Text style={{color:'black', textAlign:'center', fontSize:20, overflow:'hidden'}}>Olvidé mi contraseña</Text>
-            </Pressable>
+            </Pressable> */}<Text>d</Text>
             <Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15, justifyContent:'center'}} onPress={() => {
-                fetch(url+'/api/auth/login/', {
+                console.log(global.HermesInternal); // Debería ser undefined si New Architecture está habilitada
+                fetch('https://velazduran.com:3000/api/auth/login/', {
                     method:'POST',
+                    credentials:'include',
                     headers: {
                         'Content-Type': 'application/json', // Indicar que el contenido es JSON
                     },
@@ -90,8 +100,11 @@ const signIn = () => {
                 .then((res) =>  {SetLoginFailed(res)
                     console.log(res)
                 })
+                .catch((error) => {
+                    console.error(error)
+                })
             }}>
-                <Text style={{color:'black', textAlign:'center', fontSize:20, overflow:'hidden', textAlignVertical:'center'}} >Iniciar sesión</Text>
+                <Text style={{color:'black', textAlign:'center', fontSize:25, overflow:'hidden', textAlignVertical:'center'}} >Iniciar sesión</Text>
             </Pressable>
         </View>
     </View>

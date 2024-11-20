@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, View,  } from 'react-native'
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View, Dimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import {base_url} from '@env'
@@ -15,6 +15,8 @@ const About = () => {
         registerDate: ''
     })
     const [loading, SetLoading] = useState(true)
+    const screenWidth = Dimensions.get('screen').width
+    const [errorMessage, SetErrorMessage] = useState('Cargando, por favor espera...')
     useEffect(() => {
         fetch(url+'/api/summaries/search/'+about, {
             method:'GET',
@@ -81,7 +83,23 @@ const About = () => {
     }
     else if(loading){
         return(
-            <Text>Loading...</Text>
+            <Modal visible={true} transparent={true} animationType="fade">
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+        <View style={{ width: screenWidth*0.7,padding: 20, backgroundColor: 'white', borderRadius: 10, borderColor: 'black', borderWidth: 1, display:'flex' }}>
+          <View style={{borderBottomColor:'gray', borderBottomWidth:1, display:'flex', padding:10 }}>
+            <Text style={{ textAlign: 'center', color: 'black', fontSize:30, fontWeight:'bold' }}>AVISO</Text>
+          </View>
+          <View  style={{borderBottomColor:'gray', borderBottomWidth:1, padding:10 }}  >
+            <Text style={{textAlign:'center', fontSize:20}}>{errorMessage}</Text>
+          </View>
+          <View style={{display:'flex', alignSelf:'flex-end', padding:10 }}>
+            
+          </View>
+          
+          
+        </View>
+      </View>
+    </Modal>
         )
     }
   
