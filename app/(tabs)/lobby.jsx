@@ -14,6 +14,7 @@ const lobby = () => {
   const [errorMessage, SetErrorMessage] = useState('')
   const [postAI, SetPostAI] = useState(null)
   const [loading, SetLoading] = useState(false)
+  const [inputHeight, SetInputHeight] = useState(300)
   const screenWidth = Dimensions.get('screen').width
   const screenHeight = Dimensions.get('screen').height
   useEffect(() => {
@@ -65,7 +66,9 @@ const lobby = () => {
     <>
     <ScrollView style={{display:'flex', padding:5}}>
       <View style={{backgroundColor:'black', borderRadius:20, justifyContent:'space-between', flex:1, display:'flex', marginBottom:10}}> 
-        <TextInput placeholder='Escribe o pega el texto a traducir aquí!' numberOfLines={4} multiline placeholderTextColor='silver' style={{textAlign:'center', color:'white' ,  fontSize:25}}
+        <TextInput placeholder='Escribe o pega el texto a traducir aquí!' multiline placeholderTextColor='silver' onContentSizeChange={(event) => {
+          SetInputHeight(event.nativeEvent.contentSize.height)
+        }} style={{textAlign:'center', color:'white' , height:Math.max(300, inputHeight), fontSize:25}}
         value={text} onChangeText={(e) => {
           SetText(e)
         }}/>

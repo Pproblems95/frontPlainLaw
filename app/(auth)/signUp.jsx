@@ -35,8 +35,12 @@ const signUp = () => {
                 // })
                 // .finally(() => {router.navigate('index')})
             }
+            else{
+                alert('Hubo un error, por favor inténtalo de nuevo')
+            }
+            console.log(registered)
         }
-    })
+    }, [registered])
 const screenWidth = Dimensions.get('screen').width
 const screenHeight = Dimensions.get('screen').height
 return (
@@ -130,7 +134,7 @@ return (
                 })
             })
             .then((res) => {return res.json()})
-            .then((res) => {console.log(res)})
+            .then((res) => {SetRegistered(res)})
 
         }}>
             <Text style={{color:'white',fontSize:25, padding:10}}>Registrar cuenta</Text>

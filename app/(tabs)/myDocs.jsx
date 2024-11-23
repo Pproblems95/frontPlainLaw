@@ -28,31 +28,42 @@ const myDocs = () => {
                 SetLoading(false)
             }
             else{
-                alert('hubo un error')
+                SetErrorMessage('Por el momento no tienes contratos registrados. Cuando registres un contrato, aquí aparecerá.')
+                SetLoading(false)
             }
         }
     }, [data])
  
-  if (!loading) {
-    return (
-        <ScrollView>
-            {contracts.map((item) => (
-        <Pressable 
-            key={item.id} 
-            onPress={() => {
-                router.navigate("infoScreens/"+item.id)
-            }}
-            style={{}}
-        >
-            <View style={{backgroundColor:'black', margin:10, borderRadius:10}}>
-                <Text style={{fontSize:30, textAlign:'center', color:'white'}}>{item.site}</Text>
-                <Text style={{fontSize:20, textAlign:'center', color:'white'}} >Firmado el </Text>
-                <Text style={{fontSize:20, textAlign:'center', color:'white'}} >{item.registerDate}</Text>
+  if (!loading){
+    if(contracts.length === 0) {
+        return(
+            <View style={{justifyContent:'center', alignItems:'center', alignSelf:'center', display:'flex', flex:1}}>
+                <Text style={{fontSize:30, color:'black', textAlign:'center', textAlignVertical:'center'}}>Sin documentos registrados.</Text>
             </View>
-        </Pressable>
-    ))}
-        </ScrollView>
-      )
+        )
+    }
+    else{
+        return (
+            <ScrollView>
+                {contracts.map((item) => (
+            <Pressable 
+                key={item.id} 
+                onPress={() => {
+                    router.navigate("infoScreens/"+item.id)
+                }}
+                style={{}}
+            >
+                <View style={{backgroundColor:'black', margin:10, borderRadius:10}}>
+                    <Text style={{fontSize:30, textAlign:'center', color:'white'}}>{item.site}</Text>
+                    <Text style={{fontSize:20, textAlign:'center', color:'white'}} >Firmado el </Text>
+                    <Text style={{fontSize:20, textAlign:'center', color:'white'}} >{item.registerDate}</Text>
+                </View>
+            </Pressable>
+        ))}
+            </ScrollView>
+          )
+    }
+
   }
   else if(loading){
     return(
