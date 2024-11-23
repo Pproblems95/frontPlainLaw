@@ -1,15 +1,14 @@
 {
   "expo": {
-    "name": "plainLaw",
+    "name": "plainlaw-app",
+    "scheme": "plain",
     "slug": "plainLaw",
-    "scheme": "plainLaw",
     "version": "1.0.0",
-    "newArchEnabled": true,
     "orientation": "portrait",
-    "icon": "./assets/rayo.jpg",
+    "icon": "./assets/rayo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/rayo.jpg",
+      "image": "./assets/rayo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,16 +16,14 @@
       "supportsTablet": true
     },
     "android": {
-      
       "adaptiveIcon": {
-        "foregroundImage": "./assets/rayo.jpg",
-        "backgroundColor": "#ffffff",
-        "package": "com.tuempresa.tuapp",
-        "versionCode": 1      },
+        "foregroundImage": "./assets/rayo.png",
+        "backgroundColor": "#ffffff"
+      },
       "package": "com.pproblems.plainLaw"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/rayo.png"
     },
     "plugins": [
       "expo-router"

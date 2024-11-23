@@ -18,7 +18,7 @@ const signUp = () => {
         if(registered != null){
             if(!registered.error){
                 alert('Usuario registrado correctamente')
-                router.navigate('index')
+                router.navigate('/')
                 // fetch(url+'/api/auth/login/', {
                 //     method:'POST',
                 //     headers: {
