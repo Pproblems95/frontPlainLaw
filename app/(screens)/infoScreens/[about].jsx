@@ -1,110 +1,149 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View, Dimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
-import {base_url} from '@env'
-
+import { base_url } from '@env'
 
 const About = () => {
-    const url = base_url
-    const {about} = useLocalSearchParams()
-    const [data, SetData] = useState(null)
-    const [title, SetTitle] = useState('Contrato')
-    const [text, SetText] = useState([])
-    const [extra, SetExtra] = useState({
-        notes: '',
-        registerDate: ''
-    })
-    const [loading, SetLoading] = useState(true)
-    const screenWidth = Dimensions.get('screen').width
-    const [errorMessage, SetErrorMessage] = useState('Cargando, por favor espera...')
-    useEffect(() => {
-        fetch(url+'/api/summaries/search/'+about, {
-            method:'GET',
-            headers: {
-                'Content-Type': 'application/json', // Indicar que el contenido es JSON
-            }
-        })
-        .then((res) => {return res.json()})
-        .then((res) => SetData(res))
-    }, [])
-    useEffect(() => {
-        if (data != null) {
-            if (!data.error) {
-                SetTitle(data.body.site)
-                SetText(data.body.content)
-                SetExtra({
-                    notes: data.body.notes,
-                    registerDate: data.body.registerDate
-                })
-                SetLoading(false)
-            }
-        }
-    }, [data])
-    if (!loading) {
-        return (
-    
-            <ScrollView style={{paddingHorizontal:10}}>
-                <Stack.Screen options={{title: title}}/>
-                <View style={{paddingHorizontal:5, overflow:'scroll'}}>
-               {text.map((value, index) => {
-                const [tipo, texto] = value.split(" - ")
-                if (tipo === "Resumen") {
-                  console.log('Resumen')
-                  return(
-                    <Text key={index} style={{fontSize:20, textAlign:'justify'}}>{texto}</Text>
-                  )
-                }
-                else if(tipo === "Subtitulo"){
-                  console.log('Subtitulo')
-                  return(
-                    <Text key={index} style={{fontSize:30, textAlign:'center'}}>{texto}</Text>
-                  )
-                }
-               })}
-              </View>
-              <View>
-              <Text style={{textAlign:'center', fontSize:25, fontWeight:'bold'}}>Notas</Text>
-              <Text style={{textAlign:'justify', fontSize:20}}>{extra.notes}</Text>
-        
-              </View>
-              <View>
-                <Text style={{textAlign:'center', fontSize:25, fontWeight:'bold'}}>Fecha</Text>
-                <Text style={{textAlign:'center', fontSize:20}}>{extra.registerDate}</Text>
-              </View>
-              <View>
-                <Pressable style={{backgroundColor:'black', borderRadius:20, marginTop:20, alignSelf:'flex-end'}} onPress={() => {
-                    router.navigate('lobby')
-                }}>
-                    <Text style={{fontSize:20, color:'white', padding:10, borderRadius:20}}>Regresar</Text>
-                </Pressable>
-              </View>
-            </ScrollView>
-          )
+  const url = base_url
+  const { about } = useLocalSearchParams()
+  const [data, setData] = useState(null)
+  const [title, setTitle] = useState('Contrato')
+  const [text, setText] = useState([])
+  const [extra, setExtra] = useState({ notes: '', registerDate: '' })
+  const [loading, setLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('Cargando, por favor espera...')
+
+  useEffect(() => {
+    fetch(`${url}/api/summaries/search/${about}`)
+      .then((res) => res.json())
+      .then((res) => setData(res))
+      .catch(() => setErrorMessage('Error al cargar los datos.'))
+  }, [])
+
+  useEffect(() => {
+    if (data && !data.error) {
+      setTitle(data.body.site)
+      setText(data.body.content)
+      setExtra({ notes: data.body.notes, registerDate: data.body.registerDate })
+      setLoading(false)
     }
-    else if(loading){
-        return(
-            <Modal visible={true} transparent={true} animationType="fade">
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-        <View style={{ width: screenWidth*0.7,padding: 20, backgroundColor: 'white', borderRadius: 10, borderColor: 'black', borderWidth: 1, display:'flex' }}>
-          <View style={{borderBottomColor:'gray', borderBottomWidth:1, display:'flex', padding:10 }}>
-            <Text style={{ textAlign: 'center', color: 'black', fontSize:30, fontWeight:'bold' }}>AVISO</Text>
+  }, [data])
+
+  if (loading) {
+    return (
+      <Modal visible={true} transparent animationType="fade">
+        <View style={styles.loaderOverlay}>
+          <View style={styles.loaderContainer}>
+            <Text style={styles.loaderTitle}>AVISO</Text>
+            <Text style={styles.loaderMessage}>{errorMessage}</Text>
           </View>
-          <View  style={{borderBottomColor:'gray', borderBottomWidth:1, padding:10 }}  >
-            <Text style={{textAlign:'center', fontSize:20}}>{errorMessage}</Text>
-          </View>
-          <View style={{display:'flex', alignSelf:'flex-end', padding:10 }}>
-            
-          </View>
-          
-          
         </View>
+      </Modal>
+    )
+  }
+
+  return (
+    <>
+      <Stack.Screen options={{ title }} />
+      <ScrollView style={styles.container}>
+        {text.map((value, index) => {
+          const [tipo, texto] = value.split(' - ')
+          if (tipo === 'Resumen') {
+            return (
+              <Text key={index} style={styles.sectionText}>
+                {texto}
+              </Text>
+            )
+          } else if (tipo === 'Subtitulo') {
+            return (
+              <Text key={index} style={styles.sectionTitle}>
+                {texto}
+              </Text>
+            )
+          }
+        })}
+
+        <View>
+          <Text style={styles.sectionTitle}>Notas</Text>
+          <Text style={[styles.sectionText, {textAlign: "center"}]}>{extra.notes}</Text>
+        </View>
+
+        <View>
+          <Text style={styles.sectionTitle}>Fecha</Text>
+          <Text style={[styles.sectionText, { textAlign: 'center' }]}>{extra.registerDate}</Text>
+        </View>
+      </ScrollView>
+
+      <View style={styles.buttonBar}>
+        <Pressable style={styles.button} onPress={() => router.navigate('myDocs')}>
+          <Text style={styles.buttonText}>Volver al menú</Text>
+        </Pressable>
       </View>
-    </Modal>
-        )
-    }
-  
+    </>
+  )
 }
 
 export default About
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: 'white'
+  },
+  sectionTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 16,
+    color: '#222'
+  },
+  sectionText: {
+    fontSize: 18,
+    lineHeight: 26,
+    textAlign: 'justify',
+    color: '#333',
+    marginBottom: 12
+  },
+  buttonBar: {
+    flexDirection: 'row',
+    backgroundColor: '#000',
+    paddingVertical: 12,
+    justifyContent: 'center'
+  },
+  button: {
+    backgroundColor: '#fff',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 15
+  },
+  buttonText: {
+    color: '#000',
+    fontSize: 18,
+    fontWeight: '500'
+  },
+  loaderOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  loaderContainer: {
+    width: Dimensions.get('screen').width * 0.7,
+    backgroundColor: 'white',
+    padding: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    gap: 10
+  },
+  loaderTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: 'black'
+  },
+  loaderMessage: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#555'
+  }
+})

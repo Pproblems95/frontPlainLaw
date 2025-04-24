@@ -1,165 +1,202 @@
-import { View, Text, TextInput, Dimensions, Pressable, ScrollView, StyleSheet } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { router } from 'expo-router'
-import {base_url} from '@env'
+import { View, Text, TextInput, Modal, Pressable, StyleSheet} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { router } from 'expo-router';
+import { base_url } from '@env';
+import modal from '../styles/modals';
 
-const signUp = () => {
-    const url = base_url
+const SignUp = () => {
+  const url = base_url;
+  const [isOpen, SetOpen] = useState(false);
+  const [message, SetMessage] = useState('');
+
   const [credentials, SetCredentials] = useState({
     username: '',
     password: '',
     name: '',
-    patLastName:'',
-    matLastName:'',
-    phone:''
-})
-    const [registered, SetRegistered] = useState(null) 
-    useEffect(() => {
-        if(registered != null){
-            if(!registered.error){
-                alert('Usuario registrado correctamente')
-                router.navigate('/')
-                // fetch(url+'/api/auth/login/', {
-                //     method:'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json', // Indicar que el contenido es JSON
-                //     },
-                //     body: JSON.stringify({ 
-                //         "username": credentials.username,
-                //         "password": credentials.password
-                //     })
-                // })
-                // .then((res) => {return res.json()})
-                // .then((res) =>  {
-                //     console.log(res)
-                // })
-                // .finally(() => {router.navigate('index')})
+    patLastName: '',
+    matLastName: '',
+    phone: '',
+  });
+
+  const [registered, SetRegistered] = useState(null);
+
+  useEffect(() => {
+    if (registered != null) {
+      if (!registered.error) {
+        SetMessage('Usuario registrado correctamente');
+      } else {
+        SetMessage('Hubo un error, por favor inténtalo de nuevo');
+      }
+      SetOpen(true);
+    }
+  }, [registered]);
+  
+
+  return (
+      <View style={styles.container}>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Nombre</Text>
+          <TextInput
+            placeholder="Ingresa tu nombre"
+            value={credentials.name}
+            onChangeText={(e) => SetCredentials({ ...credentials, name: e })}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.rowContainer}>
+          <View style={[styles.inputGroup, { flex: 1, marginRight: 5 }]}>
+            <Text style={styles.label}>Apellido paterno</Text>
+            <TextInput
+              placeholder="Apellido paterno"
+              value={credentials.patLastName}
+              onChangeText={(e) => SetCredentials({ ...credentials, patLastName: e })}
+              style={styles.input}
+            />
+          </View>
+          <View style={[styles.inputGroup, { flex: 1, marginLeft: 5 }]}>
+            <Text style={styles.label}>Apellido materno</Text>
+            <TextInput
+              placeholder="Apellido materno"
+              value={credentials.matLastName}
+              onChangeText={(e) => SetCredentials({ ...credentials, matLastName: e })}
+              style={styles.input}
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Nombre de usuario</Text>
+          <TextInput
+            placeholder="Ingresa tu nombre de usuario"
+            value={credentials.username}
+            onChangeText={(e) => SetCredentials({ ...credentials, username: e })}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Contraseña</Text>
+          <TextInput
+            placeholder="Ingresa tu contraseña"
+            secureTextEntry
+            value={credentials.password}
+            onChangeText={(e) => SetCredentials({ ...credentials, password: e })}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Teléfono</Text>
+          <TextInput
+            placeholder="Teléfono"
+            value={credentials.phone}
+            keyboardType="numeric"
+            onChangeText={(e) => SetCredentials({ ...credentials, phone: e })}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={{ flex: 1 }} />
+
+        <Pressable
+          style={styles.registerButton}
+          onPress={() => {
+            const valid = Object.values(credentials).every((value) => value.trim().length >= 3);
+            if (!valid) {
+              SetMessage('Por favor, llena todos los campos con por lo menos 3 caracteres');
+              SetOpen(true);
+              return;
             }
-            else{
-                alert('Hubo un error, por favor inténtalo de nuevo')
-            }
-            console.log(registered)
-        }
-    }, [registered])
-const screenWidth = Dimensions.get('screen').width
-const screenHeight = Dimensions.get('screen').height
-return (
-    <>
-    
+            
+            fetch(url + '/api/auth/signup', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(credentials),
+            })
+              .then((res) => res.json())
+              .then((res) => {
+                console.log('Respuesta del servidor:', res);
+                SetRegistered(res)});
 
-
-<ScrollView style={{flex:1, display:'flex'}}>
-<View style={{paddingVertical:10}}>
-    <View style={{display:'flex',  justifyContent:'space-between'}}>
-        <Text style={{textAlign:'center', fontWeight:'bold', fontSize:30}}>Introduce tus datos</Text>
-    </View>
-    <View style={styles.container}>
-        <Text style={{textAlign:'center', fontSize:20}}>Nombre</Text>
-        <TextInput placeholder='ingresa tu nombre' value={credentials.name} style={{borderBottomColor:'black', borderBottomWidth:2, textAlign:'center', marginHorizontal:screenWidth*0.15}} onChangeText={(e) => {
-            SetCredentials({
-                ...credentials,
-                name: e
-            })
-        }}/>
-    </View>
-    <View style={styles.container}>
-        <Text style={{textAlign:'center', fontSize:20}}>Apellido paterno</Text>
-        <TextInput placeholder='ingresa tu apellido' value={credentials.patLastName} style={{borderBottomColor:'black', borderBottomWidth:2, textAlign:'center', marginHorizontal:screenWidth*0.15}} onChangeText={(e) => {
-            SetCredentials({
-                ...credentials,
-                patLastName: e
-            })
-        }}/>
-       
-    </View>
-    <View style={styles.container}>
-        <Text style={{textAlign:'center', fontSize:20}}>Apellido materno</Text>
-        <TextInput placeholder='ingresa tu apellido' value={credentials.matLastName} style={{borderBottomColor:'black', borderBottomWidth:2, textAlign:'center', marginHorizontal:screenWidth*0.15}} onChangeText={(e) => {
-            SetCredentials({
-                ...credentials,
-                matLastName: e
-            })
-        }}/>
-    </View>
-    <View style={styles.container}>
-        <Text style={{textAlign:'center', fontSize:20}}>Nombre de usuario</Text>
-        <TextInput placeholder='ingresa tu nombre de usuario deseado' value={credentials.username} style={{borderBottomColor:'black', borderBottomWidth:2, textAlign:'center', marginHorizontal:screenWidth*0.15}} onChangeText={(e) => {
-            SetCredentials({
-                ...credentials,
-                username: e
-            })
-        }}/>
-    </View>
-    <View style={styles.container}>
-        <Text style={{textAlign:'center', fontSize:20}}>Contraseña</Text>
-        <TextInput placeholder='ingresa tu contraseña' value={credentials.password} style={{borderBottomColor:'black', borderBottomWidth:2, textAlign:'center', marginHorizontal:screenWidth*0.15}} onChangeText={(e) => {
-            SetCredentials({
-                ...credentials,
-                password: e
-            })
-        }}/>
-    </View>
-    
-    
-    <View style={styles.container}>
-        <Text style={{textAlign:'center', fontSize:20}}>Teléfono</Text>
-        <TextInput placeholder='ingresa tu contraseña' value={credentials.phone} style={{borderBottomColor:'black', borderBottomWidth:2, textAlign:'center', marginHorizontal:screenWidth*0.15}} keyboardType='numeric' onChangeText={(e) => {
-            SetCredentials({
-                ...credentials,
-                phone: e
-            })
-        }}/>
-    </View>
-
-    <View style={{display:'flex', justifyContent:'space-between', alignItems:'center', }}>
-        <Text style={{textAlign:'center', fontWeight:'bold', fontSize:30}}>¿Todo listo? </Text>
-        <Pressable style={{backgroundColor:'black', borderRadius:15}}  onPress={() => {
-            const valid = Object.values(credentials).every((value) => value.trim().length >= 3)
-            if(!valid){
-                alert('Por favor, llena todos los campos con por lo menos 3 caracteres')
-                return;
-            }
-            fetch(url+'/api/auth/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Indicar que el contenido es JSON
-                },
-                body: JSON.stringify({
-                    username: credentials.username,
-                    password: credentials.password,
-                    name: credentials.name,
-                    patLastName:credentials.patLastName,
-                    matLastName:credentials.matLastName,
-                    phone:credentials.phone
-                })
-            })
-            .then((res) => {return res.json()})
-            .then((res) => {SetRegistered(res)})
-
-        }}>
-            <Text style={{color:'white',fontSize:25, padding:10}}>Registrar cuenta</Text>
+          }}
+        >
+          <Text style={styles.ButtonText}>Registrar cuenta</Text>
         </Pressable>
-    </View>
-</View>
-    
-</ScrollView>
-<View style={{flexDirection:'row', display:'flex', backgroundColor:'black', }}>
-        <Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15}}  >
-            <Text style={{color:'black', textAlign:'center', fontSize:20, overflow:'hidden'}}>Olvidé mi contraseña</Text>
-        </Pressable>
-        <Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15, justifyContent:'center'}} >
-            <Text style={{color:'black', textAlign:'center', fontSize:20, overflow:'hidden', textAlignVertical:'center'}} onPress={() => {
-            router.navigate("/")
-        }}>Ya tengo cuenta</Text>
-        </Pressable>
-    </View>
-</>
-)
+        <Modal visible={isOpen} transparent={true} animationType="fade">
+          <View style={modal.modalOverlay}>
+            <View style={modal.modalContent}>
+              <View>
+                <Text style={modal.modalTitle}>AVISO</Text>
+              </View>
+              <View>
+                <Text style={modal.modalMessage}>{message}</Text>
+              </View>
+              <View>
+              <Pressable
+                style={modal.modalButton}
+                onPress={() => {
+                  SetOpen(false);
+                  SetMessage('');
+                  if (registered !== null && registered?.error === false) {
+                    router.navigate('/');
+                  }
+                }}
+              >
+                <Text style={modal.modalButtonText}>Cerrar</Text>
+              </Pressable>
 
-}
+              </View>
+            </View>
+          </View>
+        </Modal>
 
-export default signUp
+      </View>
+  );
+};
 
-const styles = StyleSheet.create({container: {
-    paddingVertical:25
-}})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f6f6f6',
+    alignContent: 'space-between',
+  },
+  inputGroup: {
+    marginBottom: 30,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+    color: '#333',
+  },
+  input: {
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    backgroundColor: '#fff',
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  registerButton: {
+    backgroundColor: '#000',
+    paddingVertical: 14,
+    borderRadius: 15,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  ButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
+
+export default SignUp;

@@ -14,7 +14,7 @@ const saveDocument = () => {
     const [contract, SetContract] = useState({
         site: '',
         content:postAI.body,
-        notes: 'Puedes añadir las notas que desees'
+        notes: ''
     })
     const [isOpen, SetOpen] = useState(false)
     const [errorMessage, SetErrorMessage] = useState('')
@@ -38,104 +38,189 @@ const saveDocument = () => {
   return (
     
     <>
-    <Modal visible={isOpen} transparent={true} animationType="fade">
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-    <View style={{ width: screenWidth*0.7,padding: 20, backgroundColor: 'white', borderRadius: 10, borderColor: 'black', borderWidth: 1, display:'flex' }}>
-      <View style={{borderBottomColor:'gray', borderBottomWidth:1, display:'flex', padding:10 }}>
-        <Text style={{ textAlign: 'center', color: 'black', fontSize:30, fontWeight:'bold' }}>AVISO</Text>
-      </View>
-      <View  style={{borderBottomColor:'gray', borderBottomWidth:1, padding:10 }}  >
-        <Text style={{textAlign:'center', fontSize:20}}>{errorMessage}</Text>
-      </View>
-      <View style={{display:'flex', alignSelf:'flex-end', padding:10 }}>
-        <Pressable style={{backgroundColor:'black', borderRadius:20, padding:10}}  onPress={() => {
-          SetErrorMessage('')
-          SetOpen(false)
-        }}>
-          <Text style={{color:'white', fontSize:20}}>Cerrar</Text>
-        </Pressable>
-      </View>
-      
-      
-    </View>
-  </View>
-</Modal>
-    <ScrollView>
-        <View style={{ margin:10, }}>
-            <Text style={{fontSize:20, textAlign:'center'}}>Nombre de la empresa</Text>
-            <TextInput style={{ borderColor:'gray', borderWidth:1, fontSize:20, padding:10, borderRadius:10}} placeholder='Nombre' value={contract.site} onChangeText={(e) => {
-                SetContract({
-                    ...contract,
-                    site: e
-                })
-            }} />
+    <Modal visible={isOpen} transparent animationType="fade">
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalBox}>
+          <Text style={styles.modalHeader}>AVISO</Text>
+          <Text style={styles.modalMessage}>{errorMessage}</Text>
+          <Pressable
+            style={styles.modalButton}
+            onPress={() => {
+              SetErrorMessage('');
+              SetOpen(false);
+            }}
+          >
+            <Text style={styles.modalButtonText}>Cerrar</Text>
+          </Pressable>
         </View>
-        <View style={{paddingHorizontal:5, overflow:'scroll', borderWidth:1, borderColor:'gray' }}>
-            <Text style={{fontSize:20, textAlign:'center'}} >Síntesis del contrato</Text>
-       {postAI.body.map((value, index) => {
-        const [tipo, texto] = value.split(" - ")
-        if (tipo === "Resumen") {
-          console.log('Resumen')
-          return(
-            <Text key={index} style={{fontSize:10, textAlign:'justify'}}>{texto}</Text>
-          )
-        }
-        else if(tipo === "Subtitulo"){
-          console.log('Subtitulo')
-          return(
-            <Text key={index} style={{fontSize:20, textAlign:'center'}}>{texto}</Text>
-          )
-        }
-       })}
       </View>
-        <View style={{ margin:10, }}>
-            <Text style={{fontSize:20, textAlign:'center'}}>Notas personales</Text>
-            <TextInput style={{ borderColor:'gray', borderWidth:1, fontSize:20, padding:10, borderRadius:10}} placeholder='Añade las notas que quieras' value={contract.notes} onChangeText={(e) => {
-                SetContract({
-                    ...contract,
-                    notes: e
-                })
-            }}/>
-        </View>
-        
-    </ScrollView>
-    <View style={{flexDirection:'row', display:'flex', backgroundColor:'black'}}>
-        <Pressable   style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15, justifyContent:'center'}} onPress={() => {
-        }}>
-            <Text style={{color:'black', textAlign:'center', fontSize:20, overflow:'hidden'}}>Volver al menú</Text>
-        </Pressable>
-        <Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15, justifyContent:'center'}}  onPress={() => {
-            let legit = [contract.site, contract.notes].every(value => 
-              typeof value === 'string' && value.trim().length >= 3
+    </Modal>
+  
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>Nombre de la empresa</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre"
+          value={contract.site}
+          onChangeText={(e) =>
+            SetContract({ ...contract, site: e })
+          }
+        />
+      </View>
+  
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>Notas personales</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Añade las notas que quieras"
+          value={contract.notes}
+          onChangeText={(e) =>
+            SetContract({ ...contract, notes: e })
+          }
+        />
+      </View>
+  
+      <Text style={styles.resumenLabel}>Síntesis del contrato</Text>
+      <View style={styles.resumenBox}>
+        {postAI.body.map((value, index) => {
+          const [tipo, texto] = value.split(' - ');
+          if (tipo === 'Resumen') {
+            return (
+              <Text key={index} style={styles.resumenText}>
+                {texto}
+              </Text>
             );
-            
-            if(legit){
-              fetch(url+'/api/summaries/sign', {
-                method:'POST',
-                headers:{
-                    'Content-Type': 'application/json', // Indicar que el contenido es JSON
-                  },
-                body: JSON.stringify({
-                    "site" : contract.site,
-                    "content": contract.content,
-                    "notes" : contract.notes
-                })
-              })
-              .then((res) => {return res.json()})
-              .then((res) => {SetContractConfirmation(res)
-                console.log(res)
-              })
-            }
-            else{
-              SetErrorMessage('Por favor llena todos los campos con por lo menos 3 caracteres')
-            }}}>
-            <Text style={{color:'black', textAlign:'center', fontSize:20, overflow:'hidden', textAlignVertical:'center'}} > Guardar documento</Text>
-        </Pressable>
+          } else if (tipo === 'Subtitulo') {
+            return (
+              <Text key={index} style={styles.resumenTitle}>
+                {texto}
+              </Text>
+            );
+          }
+        })}
+      </View>
+    </ScrollView>
+  
+    <View style={styles.buttonBar}>
+      <Pressable style={styles.button} onPress={() => router.navigate('myDocs')}>
+        <Text style={styles.buttonText}>Volver al menú</Text>
+      </Pressable>
+  
+      <Pressable
+        style={styles.button}
+        onPress={() => {
+          const valid = [contract.site, contract.notes].every(
+            (v) => typeof v === 'string' && v.trim().length >= 3
+          );
+          if (valid) {
+            fetch(`${url}/api/summaries/sign`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(contract),
+            })
+              .then((res) => res.json())
+              .then((res) => {
+                SetContractConfirmation(res);
+                console.log(res);
+              });
+          } else {
+            SetErrorMessage('Por favor llena todos los campos con al menos 3 caracteres');
+          }
+        }}
+      >
+        <Text style={styles.buttonText}>Guardar documento</Text>
+      </Pressable>
     </View>
-    </>
+  </>
   )
 }
 
 export default saveDocument
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginBottom: 8,
+    color: '#333',
+  },
+  input: {
+    borderColor: 'gray',
+    borderWidth: 1,
+    fontSize: 18,
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: '#f9f9f9',
+  },
+  resumenLabel: {
+    fontSize: 22,
+    textAlign: 'center',
+    marginVertical: 10,
+    fontWeight: 'bold',
+    color: '#444',
+  },
+  resumenBox: {
+    padding: 10,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 10,
+    backgroundColor: '#f3f3f3',
+    marginBottom: 20,
+  },
+  resumenText: {
+    fontSize: 14,
+    textAlign: 'justify',
+    color: '#333',
+    marginBottom: 8,
+  },
+  resumenTitle: {
+    fontSize: 18,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 4,
+  },
+  sectionTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 16,
+    color: '#222'
+  },
+  sectionText: {
+    fontSize: 18,
+    lineHeight: 26,
+    textAlign: 'justify',
+    color: '#333',
+    marginBottom: 12,
+  },
+  buttonBar: {
+    flexDirection: 'row',
+    backgroundColor: '#000',
+    paddingVertical: 10,
+    justifyContent: 'space-around',
+  },
+  button: {
+    backgroundColor: '#fff',
+    flex: 1,
+    marginHorizontal: 10,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 12
+  },
+  buttonText: {
+    color: '#000',
+    fontSize: 18,
+    fontWeight: '500'
+  }
+});

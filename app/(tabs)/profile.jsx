@@ -53,114 +53,93 @@ const profile = () => {
     }
     else if(!loading){
         return (
-            <ScrollView>
-                <Tabs.Screen options={{title:'Mi perfil', headerRight:() => (
-                    <Pressable style={{backgroundColor: editable ? 'white' : 'black', padding:10, borderRadius:10 }} onPress={() => {
-                        if(editable){
-                            SetEditable(false)
-                        }
-                        else{
-                            SetEditable(true)
-                        }
-                    }}>
-                        <EditIcon color={editable ? 'black' : 'white'} size={40}/>
+            <ScrollView contentContainerStyle={styles.container}>
+                <Tabs.Screen options={{
+                    title: 'Mi perfil',
+                    headerRight: () => (
+                    <Pressable
+                        style={{
+                        backgroundColor: editable ? 'white' : 'black',
+                        padding: 10,
+                        borderRadius: 10,
+                        marginRight: 10
+                        }}
+                        onPress={() => SetEditable(!editable)}
+                    >
+                        <EditIcon color={editable ? 'black' : 'white'} size={40} />
                     </Pressable>
-                )}}/>
-                <View style={{alignItems:'center', margin:10}}>
-                    <UserIcon size={120}/>
-                    <Text style={{textAlign:'center', fontSize:30}}>{data.body.username}</Text>
+                    )
+                }} />
+
+                <View style={styles.center}>
+                    <UserIcon size={120} />
+                    <Text style={styles.username}>{data.body.username}</Text>
                 </View>
-                <View style={{ margin:10, }}>
-                    <Text style={{fontSize:20}}>Nombre</Text>
-                    <TextInput style={{ borderColor: editable ? 'black' : 'gray', borderWidth: editable ? 2 : 1, fontSize:20, padding:10, borderRadius:10}} placeholder='Nombre' editable={editable}
-                    value={data.body.name} onChangeText={(e) => {
+
+                {[
+                    { label: 'Nombre', key: 'name' },
+                    { label: 'Apellido paterno', key: 'patLastName' },
+                    { label: 'Apellido materno', key: 'matLastName' },
+                    { label: 'Teléfono', key: 'phone' }
+                ].map(({ label, key }) => (
+                    <View key={key} style={styles.inputContainer}>
+                    <Text style={styles.label}>{label}</Text>
+                    <TextInput
+                        style={[
+                        styles.input,
+                        editable && styles.inputEditable
+                        ]}
+                        editable={editable}
+                        value={data.body[key]}
+                        onChangeText={(text) =>
                         SetData({
                             ...data,
-                            body: {
-                                ...data.body,
-                                name: e
-                            }
+                            body: { ...data.body, [key]: text }
                         })
-                    }}/>
-                </View>
-                <View style={{ margin:10, }}>
-                    <Text style={{fontSize:20}}>Apellido paterno</Text>
-                    <TextInput style={{borderColor: editable ? 'black' : 'gray', borderWidth: editable ? 2 : 1, fontSize:20, padding:10, borderRadius:10}} placeholder='*****' editable={editable}
-                    value={data.body.patLastName} onChangeText={(e) => {
-                        SetData({
-                            ...data,
-                            body: {
-                                ...data.body,
-                                patLastName: e
-                            }
+                        }
+                        placeholder={label}
+                    />
+                    </View>
+                ))}
+
+                <Pressable
+                    style={styles.button}
+                    onPress={() => {
+                    if (editable) {
+                        fetch(url + '/api/users/current', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: data.body.name,
+                            patLastName: data.body.patLastName,
+                            matLastName: data.body.matLastName,
+                            phone: data.body.phone
                         })
-                    }}/>
-                </View>
-                <View style={{ margin:10, }}>
-                    <Text style={{fontSize:20}}>Apellido materno</Text>
-                    <TextInput style={{borderColor: editable ? 'black' : 'gray', borderWidth: editable ? 2 : 1, fontSize:20, padding:10, borderRadius:10}} placeholder='23' editable={editable}
-                    value={data.body.matLastName} onChangeText={(e) => {
-                        SetData({
-                            ...data,
-                            body: {
-                                ...data.body,
-                                matLastName: e
-                            }
                         })
-                    }}/>
-                </View>
-                <View style={{ margin:10, }}>
-                    <Text style={{fontSize:20}}>Teléfono</Text>
-                    <TextInput style={{borderColor: editable ? 'black' : 'gray', borderWidth: editable ? 2 : 1, fontSize:20, padding:10, borderRadius:10}} placeholder='Correo' editable={editable} 
-                    value={data.body.phone} onChangeText={(e) => {
-                        SetData({
-                            ...data,
-                            body: {
-                                ...data.body,
-                                phone: e
-                            }
+                        .then(res => res.json())
+                        .then(res => console.log(res))
+                        .finally(() => router.navigate('profile'));
+                    } else {
+                        fetch(url + '/api/auth/logout/', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
                         })
-                    }}/>
-                </View>
-                
-                {editable ? (
-                    <Pressable style={{backgroundColor:'black', borderRadius:20, marginTop:20, alignSelf:'center'}} onPress={() => {
-                        fetch(url+'/api/users/current', {
-                            method:'PUT',
-                            headers: {
-                                'Content-Type': 'application/json', // Indicar que el contenido es JSON
-                            },
-                            body: JSON.stringify({
-                                name: data.body.name,
-                                patLastName: data.body.patLastName,
-                                matLastName: data.body.matLastName,
-                                phone: data.body.phone
-                            })
-                        })
-                        .then((res) => {return res.json()})
-                        .then((res) => console.log(res))
-                        .finally(() => router.navigate("profile"))
-                    }}>
-                        <Text style={{fontSize:20, color:'white', padding:10, borderRadius:20}}>Guardar cambios</Text>
-                </Pressable>) : (
-                    <Pressable style={{backgroundColor:'black', borderRadius:20, marginTop:20, alignSelf:'center'}} onPress={() => {
-                        fetch(url+'/api/auth/logout/', {
-                            method:'DELETE',
-                            headers: {
-                                'Content-Type': 'application/json', // Indicar que el contenido es JSON
-                            },
-    
-                        })
-                        .then((res) => {return res.json()})
-                        .then((res) => console.log(res))
-                        .finally(() => {router.navigate('/')})
-                    }}>
-                        <Text style={{fontSize:20, color:'white', padding:10, borderRadius:20}}>Cerrar sesión</Text>
-                    </Pressable>
-                )}
-        
-        
-            </ScrollView>
+                        .then(res => res.json())
+                        .then(res => console.log(res))
+                        .finally(() => router.navigate('/'));
+                    }
+                    }}
+                >
+                    <Text style={styles.buttonText}>
+                    {editable ? 'Guardar cambios' : 'Cerrar sesión'}
+                    </Text>
+                </Pressable>
+                </ScrollView>
+
           )
     }
   
@@ -168,4 +147,53 @@ const profile = () => {
 
 export default profile
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    backgroundColor: 'white'
+  },
+  center: {
+    alignItems: 'center',
+    marginVertical: 16
+  },
+  username: {
+    fontSize: 26,
+    fontWeight: '600',
+    color: '#1a1a1a'
+  },
+  label: {
+    fontSize: 18,
+    color: '#333',
+    marginBottom: 6
+  },
+  input: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 10,
+    fontSize: 18,
+    padding: 12,
+    backgroundColor: '#f9f9f9'
+  },
+  inputEditable: {
+    borderColor: '#1a1a1a',
+    backgroundColor: '#fff'
+  },
+  inputContainer: {
+    marginBottom: 20
+  },
+  button: {
+    backgroundColor: 'black',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 24,
+    alignSelf: 'center',
+    marginTop: 24
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold'
+  }
+});
+
+  

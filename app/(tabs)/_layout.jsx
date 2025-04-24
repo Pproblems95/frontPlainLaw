@@ -14,11 +14,9 @@ const TabsLayout = () => {
         fontSize:15
       }
     }}>
-        <Tabs.Screen name='lobby' options={{title:'¡Bienvenido!', tabBarIcon: ({color}) => <HomeIcon color={color}/>, headerTitleStyle:{fontSize:30, fontWeight:'bold', color:'white'},
+        <Tabs.Screen name='myDocs' options={{title:'Mis documentos', tabBarIcon: ({color}) => <DocumentIcon color={color} /> , headerTitleStyle:{fontSize:20, fontWeight:'bold', color:'white'},
       headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}}} />
-        <Tabs.Screen name='myDocs' options={{title:'Mis documentos', tabBarIcon: ({color}) => <DocumentIcon color={color} /> , headerTitleStyle:{fontSize:30, fontWeight:'bold', color:'white'},
-      headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}}} />
-      <Tabs.Screen name='profile' options={{title:'Mi perfil', tabBarIcon: ({color}) => <UserIcon color={color}/> , headerTitleStyle:{fontSize:30, fontWeight:'bold', color:'white'},
+      <Tabs.Screen name='profile' options={{title:'Mi perfil', tabBarIcon: ({color}) => <UserIcon color={color}/> , headerTitleStyle:{fontSize:20, fontWeight:'bold', color:'white'},
       headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}}} />
     </Tabs>
   )

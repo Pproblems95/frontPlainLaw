@@ -1,6 +1,8 @@
-import { View, Text, TextInput, Dimensions, Pressable, Modal } from 'react-native'
+import { View, Text, TextInput, Dimensions, Pressable, Modal, StatusBar, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router } from 'expo-router'
+import styles from '../styles'
+import modal from '../styles/modals'
 import {base_url} from '@env'
 
 const signIn = () => {
@@ -31,8 +33,8 @@ const signIn = () => {
     useEffect(() => {
         if(loginFailed != null){
             if (!loginFailed.error) {
-                
-                router.navigate("lobby")
+
+                router.push("myDocs")
             }
             else if(loginFailed.error){
                 SetErrorMessage("Credenciales incorrectas, por favor inténtalo de nuevo")
@@ -53,40 +55,68 @@ const signIn = () => {
             SetOpen(true)
     }, [errorMessage])
   return (
-    <View style={{display:'flex', flex:1, justifyContent:'space-between'}}>
-        <View style={{display:'flex', }}>
-            <Text style={{textAlign:'center', fontWeight:'bold', fontSize:30}}>Inicia sesión</Text>
-        </View>
+    <View style={{display:'flex', flex:1, justifyContent:'space-around'}}>
+        <StatusBar barStyle={'light'} />
+        <View style = {{alignItems: "center"}}><Image style = {styles.logo} source={require('../../assets/rayo.jpg')}></Image></View>
         <View style={{ }}>
-            <Text style={{textAlign:'center', fontSize:20}}>Correo</Text>
-            <TextInput placeholder='ingrese su correo' value={credentials.username} style={{borderBottomColor:'black', borderBottomWidth:2, textAlign:'center', marginHorizontal:screenWidth*0.15}} onChangeText={(e) => {
+            <View style={{display:'flex', }}>
+                <Text style={styles.homeText}>Inicia Sesión en PlanLaw</Text>
+            </View>
+            <TextInput placeholder=' Nombre de Usuario*' value={credentials.username} style={styles.input} onChangeText={(e) => {
                 SetCredentials({
                     ...credentials,
                     username: e
                 })
             }}/>
-        </View>
-        <View style={{ }}>
-            <Text style={{textAlign:'center', fontSize:20}}>Contraseña</Text>
-            <TextInput placeholder='ingrese su contraseña' value={credentials.password} style={{borderBottomColor:'black', borderBottomWidth:2, textAlign:'center', marginHorizontal:screenWidth*0.15}} onChangeText={(e) => {
+            <TextInput placeholder=' Contraseña*' value={credentials.password} secureTextEntry style={styles.input} onChangeText={(e) => {
                 SetCredentials({
                     ...credentials,
                     password: e
                 })
             }}/>
         </View>
-
-        <View style={{display:'flex', justifyContent:'space-between', alignItems:'center', }}>
-            <Text style={{textAlign:'center', fontWeight:'bold', fontSize:30}}>¿Eres nuevo? Regístrate</Text>
-            <Pressable style={{backgroundColor:'black', borderRadius:15} } onPress={() => {
-                router.navigate("signUp")
-            }}>
-                <Text style={{color:'white',fontSize:25, padding:10}}>Registrarse</Text>
+        <View style={{ height:screenHeight*0.08, alignItems: "center"}}>
+            <Pressable style={styles.button} onPress={() => {
+                if(credentials.password.length < 3 || credentials.username.length < 3 ){
+                    SetErrorMessage('Los campos deben estar llenos con por lo menos 3 caracteres.')
+                    return
+                }
+                SetLoading(true)
+                SetErrorMessage('Cargando solicitud, por favor espera.')
+                fetch( url + '/api/auth/login/', {
+                    method:'POST',
+                    credentials:'include',
+                    headers: {
+                        'Content-Type': 'application/json', // Indicar que el contenido es JSON
+                    },
+                    body: JSON.stringify({ 
+                        "username": credentials.username,
+                        "password": credentials.password
+                    })
+                })
+                .then((res) => {return res.json()})
+                .then((res) =>  {SetLoginFailed(res)
+                    console.log(res)
+                    
+                })
+                .finally(() => {SetLoading(false)})
+                .catch((error) => {
+                    
+                    console.error(error)
+        }) 
+                }}>
+                <Text style={styles.ButtonText} >Iniciar sesión</Text>
             </Pressable>
+            <View style={{ flexDirection: "row"}}>
+            <Text style={{color: "black"}}>¿Nuevo en PlainLaw?</Text>
+            <Pressable onPress={() => router.navigate("signUp")}>
+                <Text style={{color: "black", fontWeight: "bold"}}> Registrate Aquí</Text>
+            </Pressable>
+            </View>
         </View>
-
+        {/*
         <View style={{ display:'flex', backgroundColor:'black', height:screenHeight*0.1}}>
-            {/* <Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15}} onPress={() => {
+            {<Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15}} onPress={() => {
                 fetch(url+'/api/auth/logout/', {
                     method:'DELETE',
                     headers:{
@@ -97,7 +127,7 @@ const signIn = () => {
                 .then((res) => console.log(res))
             }} >
                 <Text style={{color:'black', textAlign:'center', fontSize:20, overflow:'hidden'}}>Olvidé mi contraseña</Text>
-            </Pressable> */}<Text>d</Text>
+            </Pressable>}<Text>d</Text>
             <Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15, justifyContent:'center'}} onPress={() => {
                 if(credentials.password.length < 3 || credentials.username.length < 3 ){
                     SetErrorMessage('Los campos deben estar llenos con por lo menos 3 caracteres.')
@@ -128,22 +158,23 @@ const signIn = () => {
                 <Text style={{color:'black', textAlign:'center', fontSize:25, overflow:'hidden', textAlignVertical:'center'}} >Iniciar sesión</Text>
             </Pressable>
         </View>
+        */}
         <Modal visible={isOpen} transparent={true} animationType="fade">
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-    <View style={{ width: screenWidth*0.7,padding: 20, backgroundColor: 'white', borderRadius: 10, borderColor: 'black', borderWidth: 1, display:'flex' }}>
-      <View style={{borderBottomColor:'gray', borderBottomWidth:1, display:'flex', padding:10 }}>
-        <Text style={{ textAlign: 'center', color: 'black', fontSize:30, fontWeight:'bold' }}>AVISO</Text>
+  <View style={modal.modalOverlay}>
+    <View style={modal.modalContent}>
+      <View>
+        <Text style={modal.modalTitle}>AVISO</Text>
       </View>
-      <View  style={{borderBottomColor:'gray', borderBottomWidth:1, padding:10 }}  >
-        <Text style={{textAlign:'center', fontSize:20}}>{errorMessage}</Text>
+      <View>
+        <Text style={modal.modalMessage}>{errorMessage}</Text>
       </View>
-      <View style={{display:'flex', alignSelf:'flex-end', padding:10 }}>
+      <View>
         {!loading && (
-          <Pressable style={{backgroundColor:'black', borderRadius:20, padding:10}}  onPress={() => {
+          <Pressable style={modal.modalButton}  onPress={() => {
             SetErrorMessage('')
             SetOpen(false)
           }}>
-            <Text style={{color:'white', fontSize:20}}>Cerrar</Text>
+            <Text style={modal.modalButtonText}>Cerrar</Text>
           </Pressable>
         )}
         
