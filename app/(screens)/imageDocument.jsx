@@ -5,6 +5,9 @@ import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import Icon from "react-native-vector-icons/Feather";
 import {base_url} from '@env'
+import { KeyboardAvoidingView, Platform } from 'react-native';
+import modal from '../styles/modals';
+
 
 const UploadImage = () => {
   const [images, setImages] = useState([]);
@@ -91,7 +94,7 @@ const UploadImage = () => {
       Alert.alert('Error', 'Por favor selecciona al menos una imagen.');
       return;
     }
-
+  
     const idBase = 'img_id';
     const requestBody = {
       imgs: images.map((img, idx) => ({
@@ -99,9 +102,13 @@ const UploadImage = () => {
         data: img.base64,
       })),
     };
-
+  
     try {
-      const response = await fetch('https//equihua.org/api/ocr/recognize_imgs', {
+      SetErrorMessage('Cargando tu solicitud, por favor espera...');
+      SetLoading(true);
+      SetOpen(true);
+  
+      const response = await fetch('https://equihua.org/api/ocr/recognize_imgs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +116,7 @@ const UploadImage = () => {
         },
         body: JSON.stringify(requestBody),
       });
-
+  
       const json = await response.json();
       const ocrText = requestBody.imgs.map((img, idx) => {
         const res = json.body?.imgs?.find(x => x.id === img.id);
@@ -121,8 +128,12 @@ const UploadImage = () => {
     } catch (error) {
       console.error('Error:', error);
       Alert.alert('Error', 'No se pudo conectar al servidor.');
+    } finally {
+      SetLoading(false);
+      SetOpen(false);
     }
   };
+  
 
   const resetForm = () => {
     setImages([]);
@@ -145,82 +156,91 @@ const UploadImage = () => {
   }
   else{
     return (
-      <ScrollView contentContainerStyle={styles.container}>
-  
-        {images.length > 0 && (
-          <>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.previewScroll}>
-              {images.map((img, idx) => (
-                <Image key={idx} source={{ uri: img.uri }} style={styles.imageHorizontal} />
-              ))}
-            </ScrollView>
-            <View style= {{flexDirection: "row", justifyContent: "space-around"}}>
-              <TouchableOpacity style={styles.buttonUpload} onPress={handleUpload}>
-                <Text style={styles.buttonText2}>Extraer Texto</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={selectImages}>
-                <Icon name="upload" size={30} color="#000"/>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonReset} onPress={resetForm}>
-                <Icon name="trash-2" size={30} color="#FFFF"/>
-              </TouchableOpacity>
-            </View>
-  
-            <TextInput
-              style={styles.textOutput}
-              multiline
-              editable={false}
-              value={ocrResult}
-              placeholder='Aqui aparecerá el texto extraido'
-              onContentSizeChange={(event) => {
-                SetInputHeight(event.nativeEvent.contentSize.height)}}
-                onChangeText={(e) => {
-                  SetText(e)
-                }}           
-            />
-          </>
-        )}
-        <Pressable style={styles.buttonUpload} onPress={() => {
-        if(ocrResult.length > 0){
-          const chunks = ocrResult.split('\n')
-          const filteredChunks = chunks.filter((value) => value.trim() !== '')
-          SetSendText(filteredChunks)
-          
-        }
-        else{
-          SetErrorMessage('Por favor ingresa un texto primero')
-        }
-      }}>
-        <Text style={styles.buttonText2}>Enviar texto</Text>
-      </Pressable>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={100}
+      >
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          {images.length > 0 && (
+            <>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.previewScroll}>
+                {images.map((img, idx) => (
+                  <Image key={idx} source={{ uri: img.uri }} style={styles.imageHorizontal} />
+                ))}
+              </ScrollView>
+    
+              <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                <TouchableOpacity style={styles.buttonUpload} onPress={handleUpload}>
+                  <Text style={styles.buttonText2}>Extraer Texto</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={selectImages}>
+                  <Icon name="upload" size={30} color="#000" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonReset} onPress={resetForm}>
+                  <Icon name="trash-2" size={30} color="#FFFF" />
+                </TouchableOpacity>
+              </View>
+    
+              <View>
+                <TextInput
+                  style={[styles.textOutput, { height: Math.max(150, inputHeight) }]}
+                  multiline
+                  textAlignVertical="top"
+                  editable={false}
+                  value={ocrResult}
+                  placeholder="Aquí aparecerá el texto extraído"
+                  onContentSizeChange={(e) => SetInputHeight(e.nativeEvent.contentSize.height)}
+                  onChangeText={(e) => SetText(e)}
+                />
+              </View>
+            </>
+          )}
+    
+            <Pressable
+              style={styles.buttonUpload}
+              onPress={() => {
+                if (ocrResult.length > 0) {
+                  const chunks = ocrResult.split('\n');
+                  const filteredChunks = chunks.filter((value) => value.trim() !== '');
+                  SetSendText(filteredChunks);
+                  SetErrorMessage('Cargando tu solicitud, por favor espera...');
+                  SetOpen(true); // <-- ¡abre el modal también aquí!
+                } else {
+                  SetErrorMessage('Por favor ingresa un texto primero');
+                  SetOpen(true);
+                }
+              }}
+            >
+              <Text style={styles.buttonText2}>Enviar texto</Text>
+            </Pressable>
             <Modal visible={isOpen} transparent={true} animationType="fade">
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-            <View style={{ width: screenWidth*0.7,padding: 20, backgroundColor: 'white', borderRadius: 10, borderColor: 'black', borderWidth: 1, display:'flex' }}>
-              <View style={{borderBottomColor:'gray', borderBottomWidth:1, display:'flex', padding:10 }}>
-                <Text style={{ textAlign: 'center', color: 'black', fontSize:30, fontWeight:'bold' }}>AVISO</Text>
+            <View style={modal.modalOverlay}>
+              <View style={modal.modalContent}>
+                  <Text style={modal.modalTitle}>AVISO</Text>
+                  <Text style={modal.modalMessage}>{errorMessage}</Text>
+                <View style={{display:'flex', alignSelf:'flex-end', padding:10 }}>
+                  {!loading && (
+                    <Pressable style={modal.modalButton}  onPress={() => {
+                      SetErrorMessage('')
+                      SetOpen(false)
+                    }}>
+                      <Text style={modal.modalButtonText}>Cerrar</Text>
+                    </Pressable>
+                  )}
+                  
+                </View>
               </View>
-              <View  style={{borderBottomColor:'gray', borderBottomWidth:1, padding:10 }}  >
-                <Text style={{textAlign:'center', fontSize:20}}>{errorMessage}</Text>
-              </View>
-              <View style={{display:'flex', alignSelf:'flex-end', padding:10 }}>
-                {!loading && (
-                  <Pressable style={{backgroundColor:'black', borderRadius:20, padding:10}}  onPress={() => {
-                    SetErrorMessage('')
-                    SetOpen(false)
-                  }}>
-                    <Text style={{color:'white', fontSize:20}}>Cerrar</Text>
-                  </Pressable>
-                )}
-                
-              </View>
-              
-              
             </View>
-          </View>
-        </Modal>
-      </ScrollView>
-      
+          </Modal>
+        </ScrollView>
+      </KeyboardAvoidingView>
     );
+    
   }
 };
 

@@ -7,8 +7,9 @@ const ScreensLayout = () => {
   return (
     <Stack>
         <Stack.Screen name='textTranslated' options={{title:'Traductor', headerTitleStyle:{fontSize:30, fontWeight:'bold', color:'white'},
-      headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}, headerBackVisible:true, headerTintColor:'white'} } />
-        <Stack.Screen name='imageDocument' options={{presentation: "modal", headerBackTitleVisible: true, title:'agregar Imagen', headerTitleStyle:{fontSize:20, fontWeight:'bold', color:'white',},
+        
+      headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}, headerBackVisible:false, headerTintColor:'white'} } />
+        <Stack.Screen name='imageDocument' options={{headerBackTitleVisible: true, title:'agregar Imagen', headerTitleStyle:{fontSize:20, fontWeight:'bold', color:'white',},
             headerLeft: () => (
               <TouchableOpacity onPress={() => router.push("myDocs")}>
                 <Text style={{ color: 'white', marginLeft: 15, fontSize: 16 }}>Atrás</Text>
