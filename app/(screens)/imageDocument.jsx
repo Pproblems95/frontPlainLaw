@@ -143,7 +143,6 @@ const UploadImage = () => {
   if(images.length === 0){
     return(
         <View style ={{fles: 1,alignItems: "center", justifyContent: 'center'}}>
-          <StatusBar style="light" />
           <Text style={[styles.title, {margin: 10}]}>Seleccione una o más imagenes para extraer el texto</Text>
           <View style ={{alignItems: "center", marginTop: 30}}>
             <Icon marginBottom = {20} name="upload" size={60} color="#000"/>

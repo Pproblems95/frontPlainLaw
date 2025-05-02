@@ -56,7 +56,6 @@ const signIn = () => {
     }, [errorMessage])
   return (
     <View style={{display:'flex', flex:1, justifyContent:'space-around'}}>
-        <StatusBar barStyle={'light'} />
         <View style = {{alignItems: "center"}}><Image style = {styles.logo} source={require('../../assets/rayo.jpg')}></Image></View>
         <View style={{ }}>
             <View style={{display:'flex', }}>
