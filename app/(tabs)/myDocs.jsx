@@ -4,8 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { base_url } from '@env';
 import { router } from 'expo-router';
 import Icon from "react-native-vector-icons/Ionicons";
-import FloatingButton from '../(components)/floatingButton';
-import FloatingButton2 from '../(components)/floatingButton2';
+import FloatingButton from '../components/floatingButton';
+import FloatingButton2 from '../components/floatingButton2';
 import modal from '../styles/modals';
 
 const myDocs = () => {
