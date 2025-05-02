@@ -7,7 +7,6 @@
     "orientation": "portrait",
     "icon": "./assets/rayo.png",
     "userInterfaceStyle": "light",
-    "packageOpts" : {"url": "https://velazduran.com:3000"},
     "splash": {
       "image": "./assets/rayo.png",
       "resizeMode": "contain",
@@ -27,7 +26,8 @@
       "favicon": "./assets/rayo.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-build-properties"
     ],
     "extra": {
       "router": {
@@ -35,7 +35,8 @@
       },
       "eas": {
         "projectId": "09e2235d-457d-4db0-82c3-6bbbb43e2568"
-      }
+      },
+      "url": "https://velazduran.com:3000"
     }
   }
 }

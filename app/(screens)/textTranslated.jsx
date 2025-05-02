@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View , Pressable, ScrollView, DevSettings} from 'react-native'
+import { StyleSheet, Text, View , Pressable, ScrollView, } from 'react-native'
 import React, { useEffect } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
 import {base_url} from '@env'
