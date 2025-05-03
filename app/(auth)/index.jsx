@@ -34,7 +34,7 @@ const signIn = () => {
         if(loginFailed != null){
             if (!loginFailed.error) {
 
-                router.push("myDocs")
+                router.replace("myDocs")
             }
             else if(loginFailed.error){
                 SetErrorMessage("Credenciales incorrectas, por favor inténtalo de nuevo")

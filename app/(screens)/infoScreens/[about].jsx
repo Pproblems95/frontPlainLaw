@@ -75,7 +75,7 @@ const About = () => {
       </ScrollView>
 
       <View style={styles.buttonBar}>
-        <Pressable style={styles.button} onPress={() => router.navigate('myDocs')}>
+        <Pressable style={styles.button} onPress={() => router.replace('myDocs')}>
           <Text style={styles.buttonText}>Volver al menú</Text>
         </Pressable>
       </View>

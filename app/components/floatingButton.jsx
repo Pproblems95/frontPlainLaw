@@ -10,8 +10,8 @@ const percentHeight = (percent) => (percent / 100) * height;
 const percentWidth = (percent) => (percent / 100) * width;
 
 const FloatingButton = () => {
-  const [icon_1_bottom] = useState(new Animated.Value(percentHeight(-80)));
-  const [icon_2_bottom] = useState(new Animated.Value(percentHeight(-80)));
+  const [icon_1_bottom] = useState(new Animated.Value(percentHeight(-76.5)));
+  const [icon_2_bottom] = useState(new Animated.Value(percentHeight(-76.5)));
   const [icon_2_right] = useState(new Animated.Value(percentWidth(8)));
 
   const [pop, setPop] = useState(false);
@@ -19,7 +19,7 @@ const FloatingButton = () => {
   const popIn = () => {
     setPop(true);
     Animated.timing(icon_1_bottom, {
-      toValue: percentHeight(-70), // se eleva al 35% de altura
+      toValue: percentHeight(-68), // se eleva al 35% de altura
       duration: 300,
       useNativeDriver: false,
     }).start();
@@ -38,12 +38,12 @@ const FloatingButton = () => {
   const popOut = () => {
     setPop(false);
     Animated.timing(icon_1_bottom, {
-      toValue: percentHeight(-80),
+      toValue: percentHeight(-76.5),
       duration: 500,
       useNativeDriver: false,
     }).start();
     Animated.timing(icon_2_bottom, {
-      toValue: percentHeight(-80),
+      toValue: percentHeight(-76.5),
       duration: 500,
       useNativeDriver: false,
     }).start();

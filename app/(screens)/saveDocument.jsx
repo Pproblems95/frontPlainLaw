@@ -23,7 +23,7 @@ const saveDocument = () => {
       if (contractConfirmation != null) {
         if (!contractConfirmation.error) {
           SetErrorMessage('Contrato guardado')
-          router.navigate("myDocs")
+          router.replace("myDocs")
         }
         else{
           SetErrorMessage('hubo un error')
