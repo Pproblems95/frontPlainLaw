@@ -15,6 +15,10 @@ const ScreensLayout = () => {
       headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}, headerBackVisible:true, headerTintColor:'white'} } />
         <Stack.Screen name='saveDocument' options={{title:'Firmar documento', headerTitleStyle:{fontSize:20, fontWeight:'bold', color:'white'},
       headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}, headerBackVisible:true, headerTintColor:'white'} } />
+      <Stack.Screen name='takePicture' options={{title:'Cámara', headerTitleStyle:{fontSize:20, fontWeight:'bold', color:'white'},
+      headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}, headerBackVisible:true, headerTintColor:'white'} } />
+      <Stack.Screen name='pictureMenu' options={{title:'Cámara', headerTitleStyle:{fontSize:20, fontWeight:'bold', color:'white'},
+      headerTitleAlign:'center', headerStyle:{backgroundColor:'black'}, headerBackVisible:true, headerTintColor:'white'} } />
         <Stack.Screen name='infoScreens' options={{ headerShown:false,}} />
     </Stack>
   )

@@ -72,7 +72,7 @@ const myDocs = () => {
                     )}
                     />
 
-                    <FloatingButton onpress ={() => console.log('pene')}/>
+                    <FloatingButton/>
                 </View>
             );
         }

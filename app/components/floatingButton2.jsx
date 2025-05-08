@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet, Animated, Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { router } from "expo-router";
 
 const { height, width } = Dimensions.get("window");
@@ -10,21 +11,32 @@ const percentHeight = (percent) => (percent / 100) * height;
 const percentWidth = (percent) => (percent / 100) * width;
 
 const FloatingButton2 = () => {
-  const [icon_1_bottom] = useState(new Animated.Value(percentHeight(-74.8)));
-  const [icon_2_bottom] = useState(new Animated.Value(percentHeight(-74.8)));
+  const [icon_1_bottom] = useState(new Animated.Value(percentHeight(-30)));
+  const [icon_2_bottom] = useState(new Animated.Value(percentHeight(-30)));
   const [icon_2_right] = useState(new Animated.Value(percentWidth(7)));
-
+  const [icon_3_bottom] = useState(new Animated.Value(percentHeight(-30)));
+  const [icon_3_right] = useState(new Animated.Value(percentHeight(7)));
   const [pop, setPop] = useState(false);
 
   const popIn = () => {
     setPop(true);
     Animated.timing(icon_1_bottom, {
-      toValue: percentHeight(-65), // se eleva al 35% de altura
+      toValue: percentHeight(-63), // se eleva al 35% de altura
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(icon_3_bottom, {
+      toValue: percentHeight(-67), // se eleva al 35% de altura
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(icon_3_right, {
+      toValue: percentHeight(12), // se eleva al 35% de altura
       duration: 300,
       useNativeDriver: false,
     }).start();
     Animated.timing(icon_2_bottom, {
-      toValue: percentHeight(-70),
+      toValue: percentHeight(-74),
       duration: 300,
       useNativeDriver: false,
     }).start();
@@ -38,16 +50,26 @@ const FloatingButton2 = () => {
   const popOut = () => {
     setPop(false);
     Animated.timing(icon_1_bottom, {
-      toValue: percentHeight(-74.8),
+      toValue: percentHeight(-72.3),
       duration: 500,
       useNativeDriver: false,
     }).start();
     Animated.timing(icon_2_bottom, {
-      toValue: percentHeight(-74.8),
+      toValue: percentHeight(-72.3),
       duration: 500,
       useNativeDriver: false,
     }).start();
     Animated.timing(icon_2_right, {
+      toValue: percentWidth(7),
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(icon_3_bottom, {
+      toValue: percentHeight(-7),
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(icon_3_right, {
       toValue: percentWidth(7),
       duration: 300,
       useNativeDriver: false,
@@ -70,6 +92,11 @@ const FloatingButton2 = () => {
         </Animated.View>
       </TouchableOpacity>
 
+      <TouchableOpacity onPress={() => router.navigate("pictureMenu")}>
+        <Animated.View style={[styles.circle, { bottom: icon_3_bottom, right: icon_3_right }]}>
+          <AntDesign name="camerao" size={30} color="#FFFF" />
+        </Animated.View>
+      </TouchableOpacity>
       <TouchableOpacity
         style={styles.circleMain}
         onPress={() => {
@@ -111,15 +138,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 998
-  },
-  container: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: '100%',
-    height: '100%',
-    zIndex: 999,
-    pointerEvents: 'box-none', // <- esto es clave para que los botones no bloqueen el FlatList
   },
   
 });

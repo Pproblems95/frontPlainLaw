@@ -27,7 +27,12 @@
     },
     "plugins": [
       "expo-router",
-      "expo-build-properties"
+      "expo-build-properties",[
+        "expo-camera",{
+           "cameraPermission": "Permite acceder a tu cámara",
+           "microphonePermission": "Permite acceder a tu micrófono"
+        }
+      ]
     ],
     "extra": {
       "router": {

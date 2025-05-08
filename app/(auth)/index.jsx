@@ -59,7 +59,7 @@ const signIn = () => {
         <View style = {{alignItems: "center"}}><Image style = {styles.logo} source={require('../../assets/rayo.jpg')}></Image></View>
         <View style={{ }}>
             <View style={{display:'flex', }}>
-                <Text style={styles.homeText}>Inicia Sesión en PlanLaw</Text>
+                <Text style={styles.homeText}>Inicia Sesión en PlainLaw</Text>
             </View>
             <TextInput placeholder=' Nombre de Usuario*' value={credentials.username} style={styles.input} onChangeText={(e) => {
                 SetCredentials({

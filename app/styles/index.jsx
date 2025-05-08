@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
         marginRight: "10%",
         marginBottom: "10%",
         fontWeight:'bold', 
-        fontSize:25,
+        fontSize:24,
         alignSelf: "center"
     },
     container: {
