@@ -8,7 +8,7 @@ import {base_url} from '@env'
 const signIn = () => {
     const url = base_url
     const [loading, SetLoading] = useState(false)
-
+    const [instantLogin, setInstantLogin] = useState(null)
     const [isOpen, SetOpen] = useState(false)
     const [errorMessage, SetErrorMessage] = useState('')
     const [credentials, SetCredentials] = useState({
@@ -20,16 +20,33 @@ const signIn = () => {
     const screenHeight = Dimensions.get('screen').height
     //solucion provisional para el inicio de sesion 
     useEffect(() => {
-        fetch(url+'/api/auth/logout/', {
-            method:'DELETE',
-            credentials:'include',
+        // fetch(url+'/api/auth/logout/', {
+        //     method:'DELETE',
+        //     credentials:'include',
+        //     headers:{
+        //         'Content-Type': 'application/json', // Indicar que el contenido es JSON
+        //       },
+        // })
+        // .then((res) => {return res.json()})
+        // .then((res) => console.log(res))
+
+        fetch(url+'/api/auth/check', {
+            method: 'GET',
+            credentials: 'include',
             headers:{
-                'Content-Type': 'application/json', // Indicar que el contenido es JSON
-              },
+                'Content-Type': 'application/json'
+            }
         })
         .then((res) => {return res.json()})
-        .then((res) => console.log(res))
+        .then((res) => setInstantLogin(res.error))
     }, [])
+
+    useEffect(() => {
+        if(instantLogin === null || instantLogin === true){
+            return
+        }
+        router.replace("myDocs")
+    }, [instantLogin])
     useEffect(() => {
         if(loginFailed != null){
             if (!loginFailed.error) {
