@@ -5,10 +5,10 @@
     "slug": "plainLaw",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/rayo.png",
+    "icon": "./assets/logoRecortado.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/rayo.png",
+      "image": "./assets/logoRecortado.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,13 +17,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/rayo.png",
+        "foregroundImage": "./assets/logoRecortado.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.pproblems.plainLaw"
     },
     "web": {
-      "favicon": "./assets/rayo.png"
+      "favicon": "./assets/logoRecortado.png"
     },
     "plugins": [
       "expo-router",

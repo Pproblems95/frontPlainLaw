@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
     logo : {
         marginTop: 30,
         height: 200,
-        width: 200
+        width: 300
     },
     input: {
         height: 40,
