@@ -72,9 +72,9 @@ const signIn = () => {
             SetOpen(true)
     }, [errorMessage])
   return (
-    <View style={{display:'flex', flex:1, justifyContent:'space-around'}}>
-        <View style = {{alignItems: "center"}}><Image style = {styles.logo} source={require('../../assets/rayo.jpg')}></Image></View>
-        <View style={{ }}>
+    <View style={{display:'flex', flex:3, justifyContent:'center'}}>
+        <View style = {{alignItems: "center",justifyContent:'center' , flex:2}}><Image style = {[styles.logo]} source={require('../../assets/logo-transparent-recortado.png')} resizeMode='contain'></Image></View>
+        <View style={{alignItems:'center', marginTop:50, flex:2,  }}>
             <View style={{display:'flex', }}>
                 <Text style={styles.homeText}>Inicia Sesión en PlainLaw</Text>
             </View>
@@ -91,7 +91,7 @@ const signIn = () => {
                 })
             }}/>
         </View>
-        <View style={{ height:screenHeight*0.08, alignItems: "center"}}>
+        <View style={{ height:screenHeight*0.08, alignItems: "center", flex:1 }}>
             <Pressable style={styles.button} onPress={() => {
                 if(credentials.password.length < 3 || credentials.username.length < 3 ){
                     SetErrorMessage('Los campos deben estar llenos con por lo menos 3 caracteres.')
@@ -130,51 +130,7 @@ const signIn = () => {
             </Pressable>
             </View>
         </View>
-        {/*
-        <View style={{ display:'flex', backgroundColor:'black', height:screenHeight*0.1}}>
-            {<Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15}} onPress={() => {
-                fetch(url+'/api/auth/logout/', {
-                    method:'DELETE',
-                    headers:{
-                        'Content-Type': 'application/json', // Indicar que el contenido es JSON
-                    }
-                })
-                .then((res) => {return res.json()})
-                .then((res) => console.log(res))
-            }} >
-                <Text style={{color:'black', textAlign:'center', fontSize:20, overflow:'hidden'}}>Olvidé mi contraseña</Text>
-            </Pressable>}<Text>d</Text>
-            <Pressable style={{flex:1, backgroundColor:'white', margin:10, borderRadius:15, justifyContent:'center'}} onPress={() => {
-                if(credentials.password.length < 3 || credentials.username.length < 3 ){
-                    SetErrorMessage('Los campos deben estar llenos con por lo menos 3 caracteres.')
-                    return
-                }
-                SetLoading(true)
-                SetErrorMessage('Cargando solicitud, por favor espera.')
-                fetch('https://velazduran.com:3000/api/auth/login/', {
-                    method:'POST',
-                    credentials:'include',
-                    headers: {
-                        'Content-Type': 'application/json', // Indicar que el contenido es JSON
-                    },
-                    body: JSON.stringify({ 
-                        "username": credentials.username,
-                        "password": credentials.password
-                    })
-                })
-                .then((res) => {return res.json()})
-                .then((res) =>  {SetLoginFailed(res)
-                    console.log(res)
-                })
-                .finally(() => {SetLoading(false)})
-                .catch((error) => {
-                    console.error(error)
-                })
-            }}>
-                <Text style={{color:'black', textAlign:'center', fontSize:25, overflow:'hidden', textAlignVertical:'center'}} >Iniciar sesión</Text>
-            </Pressable>
-        </View>
-        */}
+       
         <Modal visible={isOpen} transparent={true} animationType="fade">
   <View style={modal.modalOverlay}>
     <View style={modal.modalContent}>
