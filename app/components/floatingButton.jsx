@@ -1,83 +1,64 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, StyleSheet, Animated, Dimensions } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Modal, Text } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { router } from "expo-router";
 
-const { height, width } = Dimensions.get("window");
-
-// funciones auxiliares para convertir porcentaje a valor absoluto
-const percentHeight = (percent) => (percent / 100) * height;
-const percentWidth = (percent) => (percent / 100) * width;
-
 const FloatingButton = () => {
-  const [icon_1_bottom] = useState(new Animated.Value(percentHeight(-76.5)));
-  const [icon_2_bottom] = useState(new Animated.Value(percentHeight(-76.5)));
-  const [icon_2_right] = useState(new Animated.Value(percentWidth(8)));
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const [pop, setPop] = useState(false);
-
-  const popIn = () => {
-    setPop(true);
-    Animated.timing(icon_1_bottom, {
-      toValue: percentHeight(-68), // se eleva al 35% de altura
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-    Animated.timing(icon_2_bottom, {
-      toValue: percentHeight(-75),
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-    Animated.timing(icon_2_right, {
-      toValue: percentWidth(25), // se mueve hacia la izquierda
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const popOut = () => {
-    setPop(false);
-    Animated.timing(icon_1_bottom, {
-      toValue: percentHeight(-76.5),
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-    Animated.timing(icon_2_bottom, {
-      toValue: percentHeight(-76.5),
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-    Animated.timing(icon_2_right, {
-      toValue: percentWidth(8),
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
+  const handleNavigate = (route) => {
+    setModalVisible(false);
+    router.push(route);
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.navigate("imageDocument")}>
-        <Animated.View style={[styles.circle, { bottom: icon_1_bottom }]}>
-          <Icon name="upload" size={30} color="#FFFF" />
-        </Animated.View>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => router.push("lobby")}>
-        <Animated.View
-          style={[styles.circle, { bottom: icon_2_bottom, right: icon_2_right }]}
-        >
-          <Icon name="copy" size={30} color="#FFFF" />
-        </Animated.View>
-      </TouchableOpacity>
-
       <TouchableOpacity
         style={styles.circleMain}
-        onPress={() => {
-          pop ? popOut() : popIn();
-        }}
+        onPress={() => setModalVisible(true)}
       >
         <Icon name="plus" size={30} color="#FFFF" />
       </TouchableOpacity>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPressOut={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContent}>
+            <Text style={styles.text}>Elige una opción</Text>
+            <View style={styles.optionsContainer}>
+              <TouchableOpacity
+                style={styles.optionButton}
+                onPress={() => handleNavigate("takePicture")}
+              >
+                <Icon name="camera" size={25} />
+                <Text style={styles.optionText}>Cámara</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.optionButton}
+                onPress={() => handleNavigate("imageDocument")}
+              >
+                <Icon name="upload" size={25} />
+                <Text style={styles.optionText}>Subir</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.optionButton}
+                onPress={() => handleNavigate("lobby")}
+              >
+                <Icon name="copy" size={25} />
+                <Text style={styles.optionText}>Texto</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 };
@@ -85,18 +66,11 @@ const FloatingButton = () => {
 export default FloatingButton;
 
 const styles = StyleSheet.create({
-  circle: {
-    backgroundColor: "#000",
-    width: 60,
-    height: 60,
-    position: "absolute",
-    borderWidth: 1,
-    borderColor: "gray",
-    right: "8%",
-    borderRadius: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 999
+  container: {
+    position: 'absolute',
+    bottom: '5%',
+    right: '8%',
+    zIndex: 999,
   },
   circleMain: {
     backgroundColor: "#000",
@@ -104,22 +78,50 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     width: 60,
     height: 60,
-    position: "absolute",
-    bottom: "5%",
-    right: "8%",
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 998
   },
-  container: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    width: '90%',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     width: '100%',
-    height: '100%',
-    zIndex: 999,
-    pointerEvents: 'box-none', // <- esto es clave para que los botones no bloqueen el FlatList
   },
-  
+  optionButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    marginHorizontal: 8,
+    elevation: 4,
+  },
+  optionText: {
+    marginTop: 5,
+    fontSize: 12,
+    textAlign: 'center',
+  },
 });

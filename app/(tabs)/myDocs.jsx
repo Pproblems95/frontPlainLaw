@@ -5,7 +5,6 @@ import { base_url } from '@env';
 import { router } from 'expo-router';
 import Icon from "react-native-vector-icons/Ionicons";
 import FloatingButton from '../components/floatingButton';
-import FloatingButton2 from '../components/floatingButton2';
 import modal from '../styles/modals';
 
 const myDocs = () => {
@@ -50,7 +49,7 @@ const myDocs = () => {
                 <Icon name="document" size={40} color="#000" />
                 <Text style={styles.emptyTitle}>Aún no hay documentos</Text>
                 <Text style={styles.emptySubtitle}>Cuando registres uno, aparecerá aquí.</Text>
-                <FloatingButton2 />
+                <FloatingButton/>
                 </View>
             );
         } else {

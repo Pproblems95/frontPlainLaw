@@ -18,7 +18,7 @@ const Lobby = () => {
   useEffect(() => {
     if (sendText.length > 0) {
       setLoading(true)
-      fetch(url + '/api/summaries/ai', {
+      fetch('https://equihua.org/api/summaries/ai', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

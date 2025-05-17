@@ -32,7 +32,7 @@ const textTranslated = () => {
     </ScrollView>
   
     <View style={styles.buttonBar}>
-      <Pressable style={styles.button} onPress={() => router.push("myDocs")}>
+      <Pressable style={styles.button} onPress={() => router.replace("myDocs")}>
         <Text style={styles.buttonText}>Volver al menú</Text>
       </Pressable>
   
