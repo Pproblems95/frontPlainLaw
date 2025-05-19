@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
     logo : {
         marginTop: 30,
         height: 200,
-        width: 300
+        width: 200
     },
     input: {
         height: 40,
@@ -26,14 +26,13 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         alignItems: "center",
         marginBottom: 10
-
     },
     homeText: {
         marginLeft: "10%", 
         marginRight: "10%",
         marginBottom: "10%",
         fontWeight:'bold', 
-        fontSize:24,
+        fontSize:25,
         alignSelf: "center"
     },
     container: {

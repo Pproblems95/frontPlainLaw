@@ -36,7 +36,7 @@ const FloatingButton = () => {
             <View style={styles.optionsContainer}>
               <TouchableOpacity
                 style={styles.optionButton}
-                onPress={() => handleNavigate("takePicture")}
+                onPress={() => handleNavigate("pictureMenu")}
               >
                 <Icon name="camera" size={25} />
                 <Text style={styles.optionText}>Cámara</Text>

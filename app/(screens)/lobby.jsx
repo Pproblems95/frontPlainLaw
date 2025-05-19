@@ -1,9 +1,8 @@
 import { Dimensions, Pressable, StyleSheet, Text, TextInput, View, ScrollView, Modal, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router } from 'expo-router'
-import {base_url} from '@env'
+import { base_url } from '@env'
 import { StatusBar } from 'expo-status-bar';
-
 
 const Lobby = () => {
   const url = base_url
@@ -52,7 +51,6 @@ const Lobby = () => {
 
   return (
     <>
-      <StatusBar style="light" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -83,8 +81,6 @@ const Lobby = () => {
           >
             <Text style={styles.buttonText}>Resumir texto</Text>
           </Pressable>
-
-          {loading && <ActivityIndicator size="large" color="black" style={{ marginTop: 20 }} />}
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -101,6 +97,15 @@ const Lobby = () => {
                 <Text style={styles.modalButtonText}>Cerrar</Text>
               </Pressable>
             )}
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={loading} transparent animationType="fade">
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingContent}>
+            <ActivityIndicator size="large" color="#000" />
+            <Text style={styles.loadingText}>Procesando texto, por favor espera...</Text>
           </View>
         </View>
       </Modal>
@@ -186,5 +191,23 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: 'white',
     fontSize: 18
+  },
+  loadingOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadingContent: {
+    backgroundColor: '#fff',
+    padding: 30,
+    borderRadius: 20,
+    alignItems: 'center'
+  },
+  loadingText: {
+    marginTop: 15,
+    fontSize: 16,
+    color: '#000',
+    textAlign: 'center'
   }
 })

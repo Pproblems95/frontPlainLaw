@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Dimensions, Modal,Pressable,View,Text,TouchableOpacity,Image,TextInput,StyleSheet,ScrollView,Alert} from 'react-native';
+import {Dimensions, Modal,Pressable,View,Text,TouchableOpacity,Image,TextInput,StyleSheet,ScrollView,Alert, ActivityIndicator} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -217,22 +217,29 @@ const UploadImage = () => {
             >
               <Text style={styles.buttonText2}>Enviar texto</Text>
             </Pressable>
-            <Modal visible={isOpen} transparent={true} animationType="fade">
-            <View style={modal.modalOverlay}>
-              <View style={modal.modalContent}>
-                  <Text style={modal.modalTitle}>AVISO</Text>
-                  <Text style={modal.modalMessage}>{errorMessage}</Text>
-                <View style={{display:'flex', alignSelf:'flex-end', padding:10 }}>
-                  {!loading && (
-                    <Pressable style={modal.modalButton}  onPress={() => {
-                      SetErrorMessage('')
-                      SetOpen(false)
-                    }}>
-                      <Text style={modal.modalButtonText}>Cerrar</Text>
-                    </Pressable>
-                  )}
-                  
-                </View>
+          <Modal visible={isOpen} transparent animationType="fade">
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Aviso</Text>
+                <Text style={styles.modalMessage}>{errorMessage}</Text>
+                {!loading && (
+                  <Pressable style={styles.modalButton} onPress={() => {
+                    setErrorMessage('')
+                    setOpen(false)
+                  }}>
+                    <Text style={styles.modalButtonText}>Cerrar</Text>
+                  </Pressable>
+                )}
+              </View>
+            </View>
+          </Modal>
+
+
+          <Modal visible={loading} transparent animationType="fade">
+            <View style={styles.loadingOverlay}>
+              <View style={styles.loadingContent}>
+                <ActivityIndicator size="large" color="#000" />
+                <Text style={styles.loadingText}>Procesando texto, por favor espera...</Text>
               </View>
             </View>
           </Modal>
@@ -367,6 +374,23 @@ const styles = StyleSheet.create({
   },
   regresar: {
     alignSelf: "flex-start",
-
+  },
+    loadingOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadingContent: {
+    backgroundColor: '#fff',
+    padding: 30,
+    borderRadius: 20,
+    alignItems: 'center'
+  },
+  loadingText: {
+    marginTop: 15,
+    fontSize: 16,
+    color: '#000',
+    textAlign: 'center'
   }
 });

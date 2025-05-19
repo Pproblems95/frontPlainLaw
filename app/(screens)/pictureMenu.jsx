@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Pressable, TextInput, Modal } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Pressable, TextInput, Modal, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Icon from "react-native-vector-icons/Feather";
 import * as FileSystem from 'expo-file-system';
 import TakePicture from '../components/takePicture';
 import modal from '../styles/modals';
+import { router } from 'expo-router';
 
 const pictureMenu = () => {
   const [sendingPhotos, setSendingPhotos] = useState([]);
@@ -23,7 +24,7 @@ const pictureMenu = () => {
         if(sendText != ''){
           SetLoading(true)
           console.log(sendText)
-          fetch(url+'/api/summaries/ai', {
+          fetch("https://equihua.org/api/summaries/ai", {
             method:'POST',
             headers:{
               'Content-Type': 'application/json', // Indicar que el contenido es JSON
@@ -75,7 +76,7 @@ const pictureMenu = () => {
       const requestBody = {
         imgs: sendingPhotos.map((img, idx) => ({
           id: `${idBase}_${idx}`,
-          data: img.base64,
+          data: img.data,
         })),
       };
     
@@ -143,7 +144,7 @@ const pictureMenu = () => {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: 'center' }}>
         <Text style={[styles.title, { margin: 10 }]}>
-          Seleccione una o más imágenes para extraer el texto
+          Tome una o más fotos para extraer el texto
         </Text>
         <View style={{ alignItems: "center", marginTop: 30 }}>
           <AntDesign name="camerao" size={60} color="black" style={{ marginBottom: 30 }} />
@@ -222,25 +223,33 @@ const pictureMenu = () => {
           <Text style={styles.buttonText2}>Enviar texto</Text>
         </Pressable>
       </View>
-      <Modal visible={isOpen} transparent={true} animationType="fade">
-            <View style={modal.modalOverlay}>
-              <View style={modal.modalContent}>
-                  <Text style={modal.modalTitle}>AVISO</Text>
-                  <Text style={modal.modalMessage}>{errorMessage}</Text>
-                <View style={{display:'flex', alignSelf:'flex-end', padding:10 }}>
-                  {!loading && (
-                    <Pressable style={modal.modalButton}  onPress={() => {
-                      SetErrorMessage('')
-                      SetOpen(false)
-                    }}>
-                      <Text style={modal.modalButtonText}>Cerrar</Text>
-                    </Pressable>
-                  )}
-                  
-                </View>
-              </View>
-            </View>
-          </Modal>
+
+      <Modal visible={isOpen} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Aviso</Text>
+            <Text style={styles.modalMessage}>{errorMessage}</Text>
+            {!loading && (
+              <Pressable style={styles.modalButton} onPress={() => {
+                setErrorMessage('')
+                setOpen(false)
+              }}>
+                <Text style={styles.modalButtonText}>Cerrar</Text>
+              </Pressable>
+            )}
+          </View>
+        </View>
+      </Modal>
+
+
+      <Modal visible={loading} transparent animationType="fade">
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingContent}>
+            <ActivityIndicator size="large" color="#000" />
+            <Text style={styles.loadingText}>Procesando texto, por favor espera...</Text>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -371,6 +380,23 @@ const styles = StyleSheet.create({
   },
   regresar: {
     alignSelf: "flex-start",
-
+  },
+    loadingOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadingContent: {
+    backgroundColor: '#fff',
+    padding: 30,
+    borderRadius: 20,
+    alignItems: 'center'
+  },
+  loadingText: {
+    marginTop: 15,
+    fontSize: 16,
+    color: '#000',
+    textAlign: 'center'
   }
 });
