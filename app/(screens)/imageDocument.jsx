@@ -224,8 +224,8 @@ const UploadImage = () => {
                 <Text style={styles.modalMessage}>{errorMessage}</Text>
                 {!loading && (
                   <Pressable style={styles.modalButton} onPress={() => {
-                    setErrorMessage('')
-                    setOpen(false)
+                    SetErrorMessage('')
+                    SetOpen(false)
                   }}>
                     <Text style={styles.modalButtonText}>Cerrar</Text>
                   </Pressable>

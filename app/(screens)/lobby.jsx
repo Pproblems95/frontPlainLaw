@@ -34,6 +34,7 @@ const Lobby = () => {
 
   useEffect(() => {
     if (postAI) {
+      console.log(postAI)
       if (!postAI.error) {
         router.push({
           pathname: "textTranslated",
