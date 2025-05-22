@@ -15,18 +15,40 @@ const textTranslated = () => {
     <ScrollView style={styles.container}>
       {postAI.body.map((value, index) => {
         const [tipo, texto] = value.split(" - ");
-        if (tipo === "Resumen") {
-          return (
-            <Text key={index} style={styles.sectionText}>
-              {texto}
-            </Text>
-          );
-        } else if (tipo === "Subtitulo") {
-          return (
+        // if (tipo === "Resumen") {
+        //   return (
+        //     <Text key={index} style={styles.sectionText}>
+        //       {texto}
+        //     </Text>
+        //   );
+        // } else if (tipo === "Subtitulo") {
+        //   return (
+        //     <Text key={index} style={styles.sectionTitle}>
+        //       {texto}
+        //     </Text>
+        //   );
+        // }
+        if(tipo === 'Subtitulo'){
+          console.log('entre')
+          if(!postAI.body[index+1]){
+            console.log('subtitulo detectado al final')
+            return}
+          const [tipoSiguiente, textoSiguiente] = postAI.body[index+1].split(' - ')
+          if(tipoSiguiente === 'Resumen'){
+            console.log('resumen detectado, imprimiendo subtitulo en teoria')
+            return (
             <Text key={index} style={styles.sectionTitle}>
               {texto}
             </Text>
           );
+          }
+        }
+        else{
+          console.log('me valio verga el subtitulo')
+          return (
+            <Text key={index} style={styles.sectionText}>
+              {texto}
+            </Text>)
         }
       })}
     </ScrollView>

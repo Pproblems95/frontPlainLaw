@@ -36,33 +36,15 @@ const saveDocument = () => {
       SetOpen(true)
     }, [errorMessage])
   return (
-    
-    <>
-    <Modal visible={isOpen} transparent animationType="fade">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalBox}>
-          <Text style={styles.modalHeader}>AVISO</Text>
-          <Text style={styles.modalMessage}>{errorMessage}</Text>
-          <Pressable
-            style={styles.modalButton}
-            onPress={() => {
-              SetErrorMessage('');
-              SetOpen(false);
-            }}
-          >
-            <Text style={styles.modalButtonText}>Cerrar</Text>
-          </Pressable>
-        </View>
-      </View>
-    </Modal>
   
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <View style={styles.inputGroup}>
         <Text style={styles.inputLabel}>Nombre de la empresa</Text>
         <TextInput
           style={styles.input}
           placeholder="Nombre"
           value={contract.site}
+          scrollEnabled={false}
           onChangeText={(e) =>
             SetContract({ ...contract, site: e })
           }
@@ -82,27 +64,48 @@ const saveDocument = () => {
       </View>
   
       <Text style={styles.resumenLabel}>Síntesis del contrato</Text>
-      <View style={styles.resumenBox}>
-        {postAI.body.map((value, index) => {
-          const [tipo, texto] = value.split(' - ');
-          if (tipo === 'Resumen') {
-            return (
-              <Text key={index} style={styles.resumenText}>
-                {texto}
-              </Text>
-            );
-          } else if (tipo === 'Subtitulo') {
-            return (
-              <Text key={index} style={styles.resumenTitle}>
-                {texto}
-              </Text>
-            );
-          }
-        })}
-      </View>
-    </ScrollView>
+          <ScrollView style={{width: '90%', height: 300, alignSelf: 'center'}} showsVerticalScrollIndicator = {false}>
+            {postAI.body.map((value, index) => {
+              const [tipo, texto] = value.split(" - ");
+              // if (tipo === "Resumen") {
+              //   return (
+              //     <Text key={index} style={styles.sectionText}>
+              //       {texto}
+              //     </Text>
+              //   );
+              // } else if (tipo === "Subtitulo") {
+              //   return (
+              //     <Text key={index} style={styles.sectionTitle}>
+              //       {texto}
+              //     </Text>
+              //   );
+              // }
+              if(tipo === 'Subtitulo'){
+                console.log('entre')
+                if(!postAI.body[index+1]){
+                  console.log('subtitulo detectado al final')
+                  return}
+                const [tipoSiguiente, textoSiguiente] = postAI.body[index+1].split(' - ')
+                if(tipoSiguiente === 'Resumen'){
+                  console.log('resumen detectado, imprimiendo subtitulo en teoria')
+                  return (
+                  <Text key={index} style={styles.sectionTitle}>
+                    {texto}
+                  </Text>
+                );
+                }
+              }
+              else{
+                console.log('me valio verga el subtitulo')
+                return (
+                  <Text key={index} style={styles.sectionText}>
+                    {texto}
+                  </Text>)
+              }
+            })}
+          </ScrollView>
   
-    <View style={styles.buttonBar}>
+    <View style={[styles.buttonBar,{alignSelf: 'flex-end'}]}>
       <Pressable style={styles.button} onPress={() => router.navigate('myDocs')}>
         <Text style={styles.buttonText}>Volver al menú</Text>
       </Pressable>
@@ -132,7 +135,24 @@ const saveDocument = () => {
         <Text style={styles.buttonText}>Guardar documento</Text>
       </Pressable>
     </View>
-  </>
+       <Modal visible={isOpen} transparent animationType="fade">
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalBox}>
+          <Text style={styles.modalHeader}>AVISO</Text>
+          <Text style={styles.modalMessage}>{errorMessage}</Text>
+          <Pressable
+            style={styles.modalButton}
+            onPress={() => {
+              SetErrorMessage('');
+              SetOpen(false);
+            }}
+          >
+            <Text style={styles.modalButtonText}>Cerrar</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
+    </View>
   )
 }
 
@@ -141,11 +161,13 @@ export default saveDocument
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    marginTop: 10,
     backgroundColor: '#fff',
   },
   inputGroup: {
     marginBottom: 20,
+    marginRight: 20,
+    marginLeft: 20
   },
   inputLabel: {
     fontSize: 20,

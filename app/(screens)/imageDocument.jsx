@@ -6,7 +6,8 @@ import * as ImagePicker from 'expo-image-picker';
 import Icon from "react-native-vector-icons/Feather";
 import {base_url} from '@env'
 import { KeyboardAvoidingView, Platform } from 'react-native';
-import modal from '../styles/modals';
+// Asegúrate de que esta importación sea correcta y que contenga los estilos de los modales
+// import modal from '../styles/modals'; // Si 'modal' es tu archivo de estilos, asegúrate de que exporte los estilos necesarios.
 
 
 const UploadImage = () => {
@@ -45,26 +46,31 @@ const UploadImage = () => {
     }, [sendText])
     useEffect(() => {
       console.log(sendText)
-      if (postAI != null) {
-        if (postAI.error === false) {
-          router.push({
-              pathname: "textTranslated",
-              params: { data: JSON.stringify(postAI) }
-          });
-          
+    if (postAI != null) {
+      if (postAI.error === false) {
+        router.push({
+          pathname: "textTranslated",
+          params: { data: JSON.stringify(postAI) }
+        });
+      } else {
+        SetErrorMessage('Hubo un error al procesar el texto');
+        SetOpen(true);
+        console.log(postAI);
       }
-      else{
-        alert('Hubo un error')
-        console.log(postAI)
-      }
-        
-      }
+    }
+
+
     }, [postAI])
     useEffect(() => {
       if(errorMessage != '')
       SetOpen(true)
     }, [errorMessage])
     useEffect(() => {
+      // Esta lógica se solapa con el manejo de errores del OCR y la API. 
+      // Si `loading` se activa solo para la API, la "Cargando tu solicitud..."
+      // para el OCR se manejará en `handleUpload`.
+      // Si quieres un mensaje de carga general, podrías manejarlo de otra manera.
+      // Por ahora, lo dejo como está en tu código original.
       if(loading){
         SetErrorMessage('Cargando tu solicitud, por favor espera...')
       }
@@ -86,63 +92,77 @@ const UploadImage = () => {
       }));
       setImages(prevImages => [...prevImages, ...selected]);
       setOcrResult('');
-    }    
+    }     
   };
 
-  const handleUpload = async () => {
-    if (images.length === 0) {
-      Alert.alert('Error', 'Por favor selecciona al menos una imagen.');
-      return;
-    }
-  
-    const idBase = 'img_id';
-    const requestBody = {
-      imgs: images.map((img, idx) => ({
-        id: `${idBase}_${idx}`,
-        data: img.base64,
-      })),
-    };
-  
-    try {
-      SetErrorMessage('Cargando tu solicitud, por favor espera...');
-      SetLoading(true);
-      SetOpen(true);
-  
-      const response = await fetch('https://equihua.org/api/ocr/recognize_imgs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
-  
-      const json = await response.json();
-      const ocrText = requestBody.imgs.map((img, idx) => {
-        const res = json.body?.imgs?.find(x => x.id === img.id);
-        return res
-          ? `\n${res.text}\n\n`
-          : `⚠️ Imagen ${idx + 1}: No se recibió texto\n\n`;
-      }).join('');
-      setOcrResult(ocrText);
-    } catch (error) {
-      console.error('Error:', error);
-      Alert.alert('Error', 'No se pudo conectar al servidor.');
-    } finally {
-      SetLoading(false);
-      SetOpen(false);
-    }
+const handleUpload = async () => {
+  if (images.length === 0) {
+    SetErrorMessage('Por favor selecciona al menos una imagen.');
+    SetOpen(true);
+    return;
+  }
+
+  const idBase = 'img_id';
+  const requestBody = {
+    imgs: images.map((img, idx) => ({
+      id: `${idBase}_${idx}`,
+      data: img.base64,
+    })),
   };
+
+  try {
+    SetErrorMessage('Cargando tu solicitud, por favor espera...');
+    SetLoading(true);
+    SetOpen(true); // Abrir el modal de aviso/carga
+
+    const response = await fetch('https://equihua.org/api/ocr/recognize_imgs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const json = await response.json();
+    const ocrText = requestBody.imgs.map((img, idx) => {
+      const res = json.body?.imgs?.find(x => x.id === img.id);
+      return res
+        ? `\n${res.text}\n\n`
+        : `⚠️ Imagen ${idx + 1}: No se recibió texto\n\n`;
+    }).join('');
+    setOcrResult(ocrText);
+    // Cierra el modal de carga si el OCR fue exitoso y no hay error
+    if (!loading) { // Asegúrate de que el loading no se esté utilizando para otra cosa
+      SetOpen(false); 
+      SetErrorMessage('');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    SetErrorMessage('No se pudo conectar al servidor o hubo un error al procesar las imágenes.');
+    SetOpen(true); 
+  } finally {
+    SetLoading(false);
+  }
+};
+
   
 
   const resetForm = () => {
     setImages([]);
     setOcrResult('');
+    SetErrorMessage(''); // Limpiar cualquier mensaje de error
+    SetOpen(false); // Cerrar cualquier modal abierto
+    SetLoading(false); // Detener cualquier indicador de carga
   }
 
   if(images.length === 0){
     return(
-        <View style ={{fles: 1,alignItems: "center", justifyContent: 'center'}}>
+        <View style ={{flex: 1,alignItems: "center", justifyContent: 'center'}}>
           <Text style={[styles.title, {margin: 10}]}>Seleccione una o más imagenes para extraer el texto</Text>
           <View style ={{alignItems: "center", marginTop: 30}}>
             <Icon marginBottom = {20} name="upload" size={60} color="#000"/>
@@ -186,16 +206,38 @@ const UploadImage = () => {
               </View>
     
               <View>
-                <TextInput
-                  style={[styles.textOutput, { height: Math.max(150, inputHeight) }]}
-                  multiline
-                  textAlignVertical="top"
-                  editable={false}
-                  value={ocrResult}
-                  placeholder="Aquí aparecerá el texto extraído"
-                  onContentSizeChange={(e) => SetInputHeight(e.nativeEvent.contentSize.height)}
-                  onChangeText={(e) => SetText(e)}
-                />
+      <ScrollView
+        style={[
+          styles.textOutputContainer, // Un nuevo estilo para el ScrollView si lo necesitas
+          {
+            minHeight: 150, // Mismos límites de altura que tu TextInput
+            maxHeight: 300,
+          }
+        ]}
+        showsVerticalScrollIndicator ={false}
+        // No necesitas scrollEnabled aquí, ya que el ScrollView lo maneja por defecto
+      >
+          <TextInput
+            style={[
+              styles.textOutput,
+              {
+                // Quita las propiedades de altura de aquí, el ScrollView las manejará
+                minHeight: 'auto', // O 0, para que el TextInput no imponga su propia altura
+                maxHeight: 'auto', // O 'none'
+                height: 'auto',
+              }
+            ]}
+            multiline={true} // Esencial para que el texto se "desborde" y el ScrollView lo capture
+            scrollEnabled={false} // IMPORTANTE: Deshabilita el scroll del TextInput para que el ScrollView lo maneje
+            textAlignVertical="top"
+            editable={false}
+            value={ocrResult}
+            placeholder="Aquí aparecerá el texto extraído"
+            onContentSizeChange={(e) => SetInputHeight(e.nativeEvent.contentSize.height)}
+            // Ya que editable es false, onChangeText no es necesario
+            // onChangeText={(e) => SetText(e)}
+          />
+        </ScrollView>
               </View>
             </>
           )}
@@ -208,33 +250,33 @@ const UploadImage = () => {
                   const filteredChunks = chunks.filter((value) => value.trim() !== '');
                   SetSendText(filteredChunks);
                   SetErrorMessage('Cargando tu solicitud, por favor espera...');
-                  SetOpen(true); // <-- ¡abre el modal también aquí!
+                  SetOpen(true); // Abre el modal de aviso/carga
                 } else {
-                  SetErrorMessage('Por favor ingresa un texto primero');
+                  SetErrorMessage('Por favor extrae texto de una imagen primero.');
                   SetOpen(true);
                 }
               }}
             >
               <Text style={styles.buttonText2}>Enviar texto</Text>
             </Pressable>
-          <Modal visible={isOpen} transparent animationType="fade">
+
+          {/* Modal de Aviso/Error */}
+          <Modal visible={isOpen && !loading} transparent animationType="fade">
             <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
                 <Text style={styles.modalTitle}>Aviso</Text>
                 <Text style={styles.modalMessage}>{errorMessage}</Text>
-                {!loading && (
-                  <Pressable style={styles.modalButton} onPress={() => {
-                    SetErrorMessage('')
-                    SetOpen(false)
-                  }}>
-                    <Text style={styles.modalButtonText}>Cerrar</Text>
-                  </Pressable>
-                )}
+                <Pressable style={styles.modalButton} onPress={() => {
+                  SetErrorMessage('');
+                  SetOpen(false);
+                }}>
+                  <Text style={styles.modalButtonText}>Cerrar</Text>
+                </Pressable>
               </View>
             </View>
           </Modal>
 
-
+          {/* Modal de Carga */}
           <Modal visible={loading} transparent animationType="fade">
             <View style={styles.loadingOverlay}>
               <View style={styles.loadingContent}>
@@ -283,17 +325,21 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
   },
-  textOutput: {
-    width: '100%',
-    minHeight: 150,
-    padding: 12,
+  textOutputContainer: {
+    // Aquí puedes poner estilos como un borde, padding si quieres que el scrollbar esté dentro
     borderColor: '#bbb',
     borderWidth: 1,
     borderRadius: 10,
-    fontSize: 16,
     backgroundColor: '#f8f8f8',
     marginTop: 15,
     marginBottom: 10,
+    // Las alturas minHeight y maxHeight del ScrollView son las que limitarán el área de scroll
+  },
+  textOutput: {
+    width: '100%',
+    padding: 12, // Asegúrate de que el padding esté en el TextInput
+    fontSize: 16,
+    // Aquí NO DEBEN IR minHeight, maxHeight, height porque el ScrollView las manejará
   },
   buttonalone:{
     backgroundColor: "#FFFF",
@@ -375,7 +421,40 @@ const styles = StyleSheet.create({
   regresar: {
     alignSelf: "flex-start",
   },
-    loadingOverlay: {
+  // Estilos de los modales (copia de la pantalla Lobby)
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 25,
+    borderRadius: 20,
+    width: '80%',
+    alignItems: 'center'
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10
+  },
+  modalMessage: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 20
+  },
+  modalButton: {
+    backgroundColor: '#000',
+    padding: 10,
+    borderRadius: 15
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 18
+  },
+  loadingOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center',
