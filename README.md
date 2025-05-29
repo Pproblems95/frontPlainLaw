@@ -26,7 +26,6 @@ La mayoría de los documentos legales son difíciles de entender para personas f
 
 ### Frontend
 - **React Native** con **Expo**
-- **Tailwind CSS** (usando NativeWind)
 - **React Navigation**
 
 
